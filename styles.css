@@ -10,6 +10,11 @@ body {
     font-family: 'Arial', sans-serif;
 }
 
+.centered {
+    text-align: center;
+    justify-content: center;
+}
+
 .window {
     background: #c0c0c0;
     border: 3px solid;
@@ -87,3 +92,56 @@ body {
 
 .tab-panel { display: none; }
 .tab-panel.active { display: block; }
+
+/* CREDITS CSS */
+
+.credits-title {
+    text-align: center;
+    font-weight: bold;
+    font-size: 14px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-bottom: 2px solid;
+    border-color: #808080 #fff #fff #808080;
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+}
+
+.section-header {
+    font-weight: bold;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: #808080;
+    color: #fff;
+    padding: 2px 6px;
+    margin-bottom: 6px;
+}
+
+.credit-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 3px 8px;
+    padding: 0 4px;
+}
+
+.credit-entry {
+    font-size: 14px;
+    padding: 2px 0;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.dot-orange { background: #ff8000; }
+.dot-blue   { background: #0000cc; }
+.name-orange { color: #804000; font-weight: bold; }
+.name-blue   { color: #00008b; }
+
+.credits-divider {
+    border: none;
+    border-top: 1px solid #808080;
+    border-bottom: 1px solid #fff;
+    margin: 10px 0;
+}
