@@ -6,7 +6,7 @@ A games website that just happens to be UBG
 
 ```bash
 npm install        # Install dependencies (first time only)
-npm start          # Dev server at http://localhost:8080
+npm start          # Dev server at http://localhost:8000
 npm run build      # Build for production → _site/
 ```
 
