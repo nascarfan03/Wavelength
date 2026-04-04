@@ -1,0 +1,2 @@
+list generator: 
+ python scripts/list_gen.py --repo username/repo --token ghp_ksagdfajdhg --branch main
