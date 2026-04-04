@@ -3,77 +3,77 @@
     "name": "A Difficult Game About Climbing",
     "slug": "adgac",
     "path": "adgac/index.html",
-    "thumbnail": "gn/a-difficult-game-about-climbing.png",
+    "thumbnail": "gn/png/a-difficult-game-about-climbing.png",
     "description": ""
   },
   {
     "name": "Amanda The Adventurer",
     "slug": "amanda-the-adventurer",
     "path": "amanda-the-adventurer/index.html",
-    "thumbnail": "gn/amanda-the-adventurer.png",
+    "thumbnail": "gn/png/amanda-the-adventurer.png",
     "description": ""
   },
   {
     "name": "Andy's Apple Farm",
     "slug": "andys-apple-farm",
     "path": "andys-apple-farm/index.html",
-    "thumbnail": "gn/andys-apple-farm.png",
+    "thumbnail": "gn/png/andys-apple-farm.png",
     "description": ""
   },
   {
     "name": "Antonblast",
     "slug": "antonblast",
     "path": "antonblast/index.html",
-    "thumbnail": "anton.webp",
+    "thumbnail": "webp/anton.webp",
     "description": ""
   },
   {
     "name": "Baldi's Birthday bash",
     "slug": "baldi-bbash",
     "path": "baldi-bbash/index.html",
-    "thumbnail": "bday.webp",
+    "thumbnail": "webp/bday.webp",
     "description": ""
   },
   {
     "name": "Baldi -3",
     "slug": "baldi-minus3",
     "path": "baldi-minus3/index.html",
-    "thumbnail": "minus3.webp",
+    "thumbnail": "webp/minus3.webp",
     "description": ""
   },
   {
     "name": "Baldi's Basics Plus",
     "slug": "baldi-plus",
     "path": "baldi-plus/index.html",
-    "thumbnail": "gn/baldis-basics-plus.png",
+    "thumbnail": "gn/png/baldis-basics-plus.png",
     "description": ""
   },
   {
     "name": "Baldi's Basics Classic Remastered",
     "slug": "baldi-remaster",
     "path": "baldi-remaster/index.html",
-    "thumbnail": "gn/baldis-basics-classic-remastered.png",
+    "thumbnail": "gn/png/baldis-basics-classic-remastered.png",
     "description": ""
   },
   {
     "name": "bat to the heavens",
     "slug": "bat-to-the-heavens",
     "path": "bat-to-the-heavens/index.html",
-    "thumbnail": "bat.png",
+    "thumbnail": "png/bat.png",
     "description": ""
   },
   {
     "name": "Bendy and the Ink Machine",
     "slug": "bendy",
     "path": "bendy/index.html",
-    "thumbnail": "gn/bendy-and-the-ink-machine.png",
+    "thumbnail": "gn/png/bendy-and-the-ink-machine.png",
     "description": ""
   },
   {
     "name": "BLOODMONEY!",
     "slug": "bloodmoney",
     "path": "bloodmoney/index.html",
-    "thumbnail": "gn/bloodmoney.png",
+    "thumbnail": "gn/png/bloodmoney.png",
     "description": ""
   },
   {
@@ -87,259 +87,259 @@
     "name": "Buckshot Roulette",
     "slug": "buckshot-roulette",
     "path": "buckshot-roulette/index.html",
-    "thumbnail": "gn/buckshot-roulette.png",
+    "thumbnail": "gn/png/buckshot-roulette.png",
     "description": ""
   },
   {
     "name": "Cheese Rolling",
     "slug": "cheese-rolling",
     "path": "cheese-rolling/index.html",
-    "thumbnail": "gn/cheese-rolling.png",
+    "thumbnail": "gn/png/cheese-rolling.png",
     "description": ""
   },
   {
     "name": "Christmas Massacre",
     "slug": "christmas-massacre",
     "path": "christmas-massacre/index.html",
-    "thumbnail": "gn/christmas-massacre.png",
+    "thumbnail": "gn/png/christmas-massacre.png",
     "description": ""
   },
   {
     "name": "Class of '09",
     "slug": "class-of-09",
     "path": "class-of-09/index.html",
-    "thumbnail": "gn/class-of-09.png",
+    "thumbnail": "gn/png/class-of-09.png",
     "description": ""
   },
   {
     "name": "DEAD PLATE",
     "slug": "dead-plate",
     "path": "dead-plate/index.html",
-    "thumbnail": "gn/dead-plate.png",
+    "thumbnail": "gn/png/dead-plate.png",
     "description": ""
   },
   {
     "name": "The Deadseat",
     "slug": "deadseat",
     "path": "deadseat/index.html",
-    "thumbnail": "gn/the-deadseat.png",
+    "thumbnail": "gn/png/the-deadseat.png",
     "description": ""
   },
   {
     "name": "DELTATRAVELER",
     "slug": "deltatraveler",
     "path": "deltatraveler/index.html",
-    "thumbnail": "gn/deltatraveler.png",
+    "thumbnail": "gn/png/deltatraveler.png",
     "description": ""
   },
   {
     "name": "Do NOT Take This Cat Home",
     "slug": "donottakethiscathome",
     "path": "donottakethiscathome/index.html",
-    "thumbnail": "gn/do-not-take-this-cat-home.png",
+    "thumbnail": "gn/png/do-not-take-this-cat-home.png",
     "description": ""
   },
   {
     "name": "Fears To Fathom: Home Alone",
     "slug": "fears-to-fathom/home-alone",
     "path": "fears-to-fathom/home-alone/index.html",
-    "thumbnail": "gn/fears-to-fathom-home-alone.png",
+    "thumbnail": "gn/png/fears-to-fathom-home-alone.png",
     "description": ""
   },
   {
     "name": "Getting Over It",
     "slug": "getting-over-it",
     "path": "getting-over-it/index.html",
-    "thumbnail": "gettin.webp",
+    "thumbnail": "webp/gettin.webp",
     "description": ""
   },
   {
     "name": "Happy Sheepies",
     "slug": "happy-sheepies",
     "path": "happy-sheepies/index.html",
-    "thumbnail": "gn/happy-sheepies.png",
+    "thumbnail": "gn/png/happy-sheepies.png",
     "description": ""
   },
   {
     "name": "Hotline Miami",
     "slug": "hotline-miami",
     "path": "hotline-miami/index.html",
-    "thumbnail": "gn/hotline-miami.png",
+    "thumbnail": "gn/png/hotline-miami.png",
     "description": ""
   },
   {
     "name": "HUMAN EXPENDITURE PROGRAM",
     "slug": "human-expenditure-program",
     "path": "human-expenditure-program/index.html",
-    "thumbnail": "gn/human-expenditure-program.png",
+    "thumbnail": "gn/png/human-expenditure-program.png",
     "description": ""
   },
   {
     "name": "Jelly Drift",
     "slug": "jelly-drift",
     "path": "jelly-drift/index.html",
-    "thumbnail": "gn/jelly-drift.png",
+    "thumbnail": "gn/png/jelly-drift.png",
     "description": ""
   },
   {
     "name": "Karlson",
     "slug": "karlson",
     "path": "karlson/index.html",
-    "thumbnail": "gn/karlson.png",
+    "thumbnail": "webp/karlson.webp",
     "description": ""
   },
   {
     "name": "Kindergarten",
     "slug": "kindergarten/1",
     "path": "kindergarten/1/index.html",
-    "thumbnail": "gn/kindergarten.png",
+    "thumbnail": "gn/png/kindergarten.png",
     "description": ""
   },
   {
     "name": "Kindergarten 2",
     "slug": "kindergarten/2",
     "path": "kindergarten/2/index.html",
-    "thumbnail": "gn/kindergarten-2.png",
+    "thumbnail": "gn/png/kindergarten-2.png",
     "description": ""
   },
   {
     "name": "Lacey's Flash Games",
     "slug": "lacysflashgames",
     "path": "lacysflashgames/index.html",
-    "thumbnail": "gn/laceys-flash-games.png",
+    "thumbnail": "gn/png/laceys-flash-games.png",
     "description": ""
   },
   {
     "name": "Milkman Karlson",
     "slug": "milkman-karlson",
     "path": "milkman-karlson/index.html",
-    "thumbnail": "milk.webp",
+    "thumbnail": "webp/milk.webp",
     "description": ""
   },
   {
     "name": "OMORI",
     "slug": "omori-fixed",
     "path": "omori-fixed/index.html",
-    "thumbnail": "gn/omori.png",
+    "thumbnail": "webp/omori.webp",
     "description": ""
   },
   {
     "name": "People Playground",
     "slug": "people-playground",
     "path": "people-playground/index.html",
-    "thumbnail": "peoplepg.webp",
+    "thumbnail": "webp/peoplepg.webp",
     "description": ""
   },
   {
     "name": "Pizza Tower 1.1.0 Web Port",
     "slug": "pizza-tower",
     "path": "pizza-tower/index.html",
-    "thumbnail": "pizzatower.webp",
+    "thumbnail": "png/pizzatower.png",
     "description": ""
   },
   {
     "name": "Raft",
     "slug": "raft",
     "path": "raft/index.html",
-    "thumbnail": "gn/raft.png",
+    "thumbnail": "webp/raft.webp",
     "description": ""
   },
   {
     "name": "R.E.P.O",
     "slug": "repo",
     "path": "repo/index.html",
-    "thumbnail": "repo.webp",
+    "thumbnail": "webp/repo.webp",
     "description": ""
   },
   {
     "name": "SchoolBoy Runaway",
     "slug": "schoolboy-runaway",
     "path": "schoolboy-runaway/index.html",
-    "thumbnail": "gn/schoolboy-runaway.png",
+    "thumbnail": "gn/png/schoolboy-runaway.png",
     "description": ""
   },
   {
     "name": "Slender",
     "slug": "slender",
     "path": "slender/index.html",
-    "thumbnail": "slender.webp",
+    "thumbnail": "webp/slender.webp",
     "description": ""
   },
   {
     "name": "sonic.exe",
     "slug": "sonic.exe",
     "path": "sonic.exe/index.html",
-    "thumbnail": "sonicexe.webp",
+    "thumbnail": "webp/sonicexe.webp",
     "description": ""
   },
   {
     "name": "Speed Stars",
     "slug": "speed-stars",
     "path": "speed-stars/index.html",
-    "thumbnail": "gn/speed-stars.png",
+    "thumbnail": "gn/png/speed-stars.png",
     "description": ""
   },
   {
     "name": "Tattletail",
     "slug": "tattletail",
     "path": "tattletail/index.html",
-    "thumbnail": "gn/tattletail.png",
+    "thumbnail": "gn/png/tattletail.png",
     "description": ""
   },
   {
     "name": "That's not my neighbor",
     "slug": "thats-not-my-neighbor",
     "path": "thats-not-my-neighbor/index.html",
-    "thumbnail": "gn/thats-not-my-neighbor.png",
+    "thumbnail": "gn/png/thats-not-my-neighbor.png",
     "description": ""
   },
   {
     "name": "The Man in the Window",
     "slug": "the-man-in-the-window",
     "path": "the-man-in-the-window/index.html",
-    "thumbnail": "gn/the-man-in-the-window.png",
+    "thumbnail": "gn/png/the-man-in-the-window.png",
     "description": ""
   },
   {
     "name": "ULTRAKILL Prelude",
     "slug": "ultrakill",
     "path": "ultrakill/index.html",
-    "thumbnail": "ultra.webp",
+    "thumbnail": "webp/ultra.webp",
     "description": ""
   },
   {
     "name": "UNDERTALE YELLOW",
     "slug": "undertale-yellow",
     "path": "undertale-yellow/index.html",
-    "thumbnail": "gn/undertale-yellow.png",
+    "thumbnail": "gn/png/undertale-yellow.png",
     "description": ""
   },
   {
     "name": "webfishing",
     "slug": "web-fishing",
     "path": "web-fishing/index.html",
-    "thumbnail": "gn/webfishing.png",
+    "thumbnail": "gn/png/webfishing.png",
     "description": ""
   },
   {
     "name": "Witch's Heart",
     "slug": "witch-heart",
     "path": "witch-heart/index.html",
-    "thumbnail": "gn/witchs-heart.png",
+    "thumbnail": "gn/png/witchs-heart.png",
     "description": ""
   },
   {
     "name": "Yandere Simulator",
     "slug": "yandere-simulator",
     "path": "yandere-simulator/index.html",
-    "thumbnail": "gn/yandere-simulator.png",
+    "thumbnail": "gn/png/yandere-simulator.png",
     "description": ""
   },
   {
     "name": "Yume Nikki",
     "slug": "yume-nikki",
     "path": "yume-nikki/index.html",
-    "thumbnail": "gn/yume-nikki.png",
+    "thumbnail": "gn/png/yume-nikki.png",
     "description": ""
   }
 ]

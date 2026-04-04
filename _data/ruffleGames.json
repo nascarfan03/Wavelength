@@ -248,7 +248,7 @@
     "name": "Abandoned",
     "slug": "abandoned-1766561e8",
     "path": "abandoned-1766561e8/index.html",
-    "thumbnail": "gn/abandoned.png",
+    "thumbnail": "gn/png/abandoned.png",
     "description": ""
   },
   {
@@ -318,21 +318,21 @@
     "name": "Achievement Unlocked",
     "slug": "achievement-unlocked-131963467",
     "path": "achievement-unlocked-131963467/index.html",
-    "thumbnail": "gn/achievement-unlocked.png",
+    "thumbnail": "gn/png/achievement-unlocked.png",
     "description": ""
   },
   {
     "name": "Achievement Unlocked",
     "slug": "achievement-unlocked-2893817f",
     "path": "achievement-unlocked-2893817f/index.html",
-    "thumbnail": "gn/achievement-unlocked.png",
+    "thumbnail": "gn/png/achievement-unlocked.png",
     "description": ""
   },
   {
     "name": "Achievement Unlocked",
     "slug": "achievement-unlocked-6561395b",
     "path": "achievement-unlocked-6561395b/index.html",
-    "thumbnail": "gn/achievement-unlocked.png",
+    "thumbnail": "gn/png/achievement-unlocked.png",
     "description": ""
   },
   {
@@ -1424,14 +1424,14 @@
     "name": "Awesome Tanks",
     "slug": "awesome-tanks-12812fdd9",
     "path": "awesome-tanks-12812fdd9/index.html",
-    "thumbnail": "gn/awesome-tanks.png",
+    "thumbnail": "gn/png/awesome-tanks.png",
     "description": ""
   },
   {
     "name": "Awesome Tanks 2",
     "slug": "awesome-tanks-2-137113467",
     "path": "awesome-tanks-2-137113467/index.html",
-    "thumbnail": "gn/awesome-tanks-2.png",
+    "thumbnail": "gn/png/awesome-tanks-2.png",
     "description": ""
   },
   {
@@ -1809,7 +1809,7 @@
     "name": "Bazooka Boy",
     "slug": "bazooka-boy-1425505b0",
     "path": "bazooka-boy-1425505b0/index.html",
-    "thumbnail": "gn/bazooka-boy.png",
+    "thumbnail": "gn/png/bazooka-boy.png",
     "description": ""
   },
   {
@@ -2327,7 +2327,7 @@
     "name": "Bloons",
     "slug": "bloons-793817f",
     "path": "bloons-793817f/index.html",
-    "thumbnail": "bloons.webp",
+    "thumbnail": "webp/bloons.webp",
     "description": ""
   },
   {
@@ -2341,7 +2341,7 @@
     "name": "Bloons Td 5",
     "slug": "bloons-td-5-178395d58",
     "path": "bloons-td-5-178395d58/index.html",
-    "thumbnail": "gn/bloons-td-5.png",
+    "thumbnail": "gn/png/bloons-td-5.png",
     "description": ""
   },
   {
@@ -2383,7 +2383,7 @@
     "name": "Bloxorz",
     "slug": "bloxorz-539817f",
     "path": "bloxorz-539817f/index.html",
-    "thumbnail": "gn/bloxorz.png",
+    "thumbnail": "png/bloxorz.png",
     "description": ""
   },
   {
@@ -3146,7 +3146,7 @@
     "name": "Burrito Bison",
     "slug": "burrito-bison-10592f2f2",
     "path": "burrito-bison-10592f2f2/index.html",
-    "thumbnail": "burrito.webp",
+    "thumbnail": "webp/burrito.webp",
     "description": ""
   },
   {
@@ -9327,7 +9327,7 @@
     "name": "Grey",
     "slug": "grey-12117fdd9",
     "path": "grey-12117fdd9/index.html",
-    "thumbnail": "grey.webp",
+    "thumbnail": "webp/grey.webp",
     "description": ""
   },
   {
@@ -9432,7 +9432,7 @@
     "name": "Gun Mayhem",
     "slug": "gun-mayhem-11419f2f2",
     "path": "gun-mayhem-11419f2f2/index.html",
-    "thumbnail": "gun.webp",
+    "thumbnail": "webp/gun.webp",
     "description": ""
   },
   {
@@ -9446,7 +9446,7 @@
     "name": "Gun Mayhem Redux",
     "slug": "gun-mayhem-redux-17621094b",
     "path": "gun-mayhem-redux-17621094b/index.html",
-    "thumbnail": "gun3.webp",
+    "thumbnail": "webp/gun3.webp",
     "description": ""
   },
   {
@@ -10153,7 +10153,7 @@
     "name": "House",
     "slug": "house-18108daa8",
     "path": "house-18108daa8/index.html",
-    "thumbnail": "house.webp",
+    "thumbnail": "webp/house.webp",
     "description": ""
   },
   {
@@ -11980,21 +11980,21 @@
     "name": "Learn To Fly 2",
     "slug": "learn-to-fly-2-11967fdd9",
     "path": "learn-to-fly-2-11967fdd9/index.html",
-    "thumbnail": "gn/learn-to-fly-2.png",
+    "thumbnail": "jpeg/learn-to-fly-2.jpeg",
     "description": ""
   },
   {
     "name": "Learn To Fly 3",
     "slug": "learn-to-fly-3-17987d62f",
     "path": "learn-to-fly-3-17987d62f/index.html",
-    "thumbnail": "gn/learn-to-fly-3.png",
+    "thumbnail": "gn/png/learn-to-fly-3.png",
     "description": ""
   },
   {
     "name": "Learn To Fly",
     "slug": "learn-to-fly-37895ed4",
     "path": "learn-to-fly-37895ed4/index.html",
-    "thumbnail": "gn/learn-to-fly.png",
+    "thumbnail": "jpeg/learn-to-fly.jpeg",
     "description": ""
   },
   {
@@ -13695,7 +13695,7 @@
     "name": "Moto X3M",
     "slug": "moto-x3m-17780bee1",
     "path": "moto-x3m-17780bee1/index.html",
-    "thumbnail": "gn/moto-x3m.png",
+    "thumbnail": "gn/png/moto-x3m.png",
     "description": ""
   },
   {
@@ -14010,7 +14010,7 @@
     "name": "Mutilate A Doll 2",
     "slug": "mutilate-a-doll-2-161172a32",
     "path": "mutilate-a-doll-2-161172a32/index.html",
-    "thumbnail": "gn/mutilate-a-doll-2.png",
+    "thumbnail": "gn/png/mutilate-a-doll-2.png",
     "description": ""
   },
   {
@@ -14423,7 +14423,7 @@
     "name": "Ninja",
     "slug": "ninja-42235ed4",
     "path": "ninja-42235ed4/index.html",
-    "thumbnail": "ninja.webp",
+    "thumbnail": "webp/ninja.webp",
     "description": ""
   },
   {
@@ -14941,7 +14941,7 @@
     "name": "Orange",
     "slug": "orange-350817f",
     "path": "orange-350817f/index.html",
-    "thumbnail": "orange.webp",
+    "thumbnail": "webp/orange.webp",
     "description": ""
   },
   {
@@ -15249,56 +15249,56 @@
     "name": "Papas Burgeria",
     "slug": "papas-burgeria-1002979f9",
     "path": "papas-burgeria-1002979f9/index.html",
-    "thumbnail": "gn/papas-burgeria.png",
+    "thumbnail": "webp/papas-burgeria.webp",
     "description": ""
   },
   {
     "name": "Papas Cupcakeria",
     "slug": "papas-cupcakeria-155779c35",
     "path": "papas-cupcakeria-155779c35/index.html",
-    "thumbnail": "gn/papas-cupcakeria.png",
+    "thumbnail": "gn/png/papas-cupcakeria.png",
     "description": ""
   },
   {
     "name": "Papas Freezeria",
     "slug": "papas-freezeria-12067aa8e",
     "path": "papas-freezeria-12067aa8e/index.html",
-    "thumbnail": "gn/papas-freezeria.png",
+    "thumbnail": "gn/png/papas-freezeria.png",
     "description": ""
   },
   {
     "name": "Papas Hot Doggeria",
     "slug": "papas-hot-doggeria-1429305b0",
     "path": "papas-hot-doggeria-1429305b0/index.html",
-    "thumbnail": "gn/papas-hot-doggeria.png",
+    "thumbnail": "gn/png/papas-hot-doggeria.png",
     "description": ""
   },
   {
     "name": "Papas Pancakeria",
     "slug": "papas-pancakeria-130683467",
     "path": "papas-pancakeria-130683467/index.html",
-    "thumbnail": "gn/papas-pancakeria.png",
+    "thumbnail": "webp/papas-pancakeria.webp",
     "description": ""
   },
   {
     "name": "Papas Pastaria",
     "slug": "papas-pastaria-15821ce29",
     "path": "papas-pastaria-15821ce29/index.html",
-    "thumbnail": "gn/papas-pastaria.png",
+    "thumbnail": "gn/png/papas-pastaria.png",
     "description": ""
   },
   {
     "name": "Papas Taco Mia",
     "slug": "papas-taco-mia-11628f2f2",
     "path": "papas-taco-mia-11628f2f2/index.html",
-    "thumbnail": "gn/papas-taco-mia.png",
+    "thumbnail": "webp/papas-taco-mia.webp",
     "description": ""
   },
   {
     "name": "Papas Wingeria",
     "slug": "papas-wingeria-134873467",
     "path": "papas-wingeria-134873467/index.html",
-    "thumbnail": "gn/papas-wingeria.png",
+    "thumbnail": "webp/papas-wingeria.webp",
     "description": ""
   },
   {
@@ -15711,7 +15711,7 @@
     "name": "Pixel",
     "slug": "pixel-42715ed4",
     "path": "pixel-42715ed4/index.html",
-    "thumbnail": "pixel.webp",
+    "thumbnail": "webp/pixel.webp",
     "description": ""
   },
   {
@@ -16698,14 +16698,14 @@
     "name": "Raft Wars 2",
     "slug": "raft-wars-2-1485305b0",
     "path": "raft-wars-2-1485305b0/index.html",
-    "thumbnail": "gn/raft-wars-2.png",
+    "thumbnail": "gn/png/raft-wars-2.png",
     "description": ""
   },
   {
     "name": "Raft Wars",
     "slug": "raft-wars-990817f",
     "path": "raft-wars-990817f/index.html",
-    "thumbnail": "gn/raft-wars.png",
+    "thumbnail": "gn/png/raft-wars.png",
     "description": ""
   },
   {
@@ -17013,7 +17013,7 @@
     "name": "Red Ball 4 Vol2",
     "slug": "red-ball-4-vol2-1521605b0",
     "path": "red-ball-4-vol2-1521605b0/index.html",
-    "thumbnail": "redball4vol2.webp",
+    "thumbnail": "png/redball4vol2.png",
     "description": ""
   },
   {
@@ -17454,7 +17454,7 @@
     "name": "Road Of Fury",
     "slug": "road-of-fury-157899d94",
     "path": "road-of-fury-157899d94/index.html",
-    "thumbnail": "gn/road-of-fury.png",
+    "thumbnail": "gn/png/road-of-fury.png",
     "description": ""
   },
   {
@@ -18651,7 +18651,7 @@
     "name": "Shift",
     "slug": "shift-751817f",
     "path": "shift-751817f/index.html",
-    "thumbnail": "shift.webp",
+    "thumbnail": "webp/shift.webp",
     "description": ""
   },
   {
@@ -20415,7 +20415,7 @@
     "name": "Stick War",
     "slug": "stick-war-44059cba",
     "path": "stick-war-44059cba/index.html",
-    "thumbnail": "stickwar.webp",
+    "thumbnail": "webp/stickwar.webp",
     "description": ""
   },
   {
@@ -20877,7 +20877,7 @@
     "name": "Sugar Sugar",
     "slug": "sugar-sugar-10638f2f2",
     "path": "sugar-sugar-10638f2f2/index.html",
-    "thumbnail": "sugarsugar.webp",
+    "thumbnail": "png/sugarsugar.png",
     "description": ""
   },
   {
@@ -22851,7 +22851,7 @@
     "name": "Thing Thing Arena 3",
     "slug": "thing-thing-arena-3-32985ed4",
     "path": "thing-thing-arena-3-32985ed4/index.html",
-    "thumbnail": "gn/thing-thing-arena-3.png",
+    "thumbnail": "gn/png/thing-thing-arena-3.png",
     "description": ""
   },
   {
@@ -23061,7 +23061,7 @@
     "name": "Toss The Turtle",
     "slug": "toss-the-turtle-44219cba",
     "path": "toss-the-turtle-44219cba/index.html",
-    "thumbnail": "gn/toss-the-turtle.png",
+    "thumbnail": "gn/png/toss-the-turtle.png",
     "description": ""
   },
   {
@@ -24034,14 +24034,14 @@
     "name": "Vex 2",
     "slug": "vex-2-154799c35",
     "path": "vex-2-154799c35/index.html",
-    "thumbnail": "gn/vex-2.png",
+    "thumbnail": "gn/png/vex-2.png",
     "description": ""
   },
   {
     "name": "Vex 3",
     "slug": "vex-3-160499ee5",
     "path": "vex-3-160499ee5/index.html",
-    "thumbnail": "gn/vex-3.png",
+    "thumbnail": "gn/png/vex-3.png",
     "description": ""
   },
   {
@@ -24489,21 +24489,21 @@
     "name": "Wheely",
     "slug": "wheely-1437305b0",
     "path": "wheely-1437305b0/index.html",
-    "thumbnail": "gn/wheely.png",
+    "thumbnail": "gn/png/wheely.png",
     "description": ""
   },
   {
     "name": "Wheely 2",
     "slug": "wheely-2-15676aa8a",
     "path": "wheely-2-15676aa8a/index.html",
-    "thumbnail": "gn/wheely-2.png",
+    "thumbnail": "gn/png/wheely-2.png",
     "description": ""
   },
   {
     "name": "Wheely 3",
     "slug": "wheely-3-15915daf6",
     "path": "wheely-3-15915daf6/index.html",
-    "thumbnail": "gn/wheely-3.png",
+    "thumbnail": "gn/png/wheely-3.png",
     "description": ""
   },
   {
