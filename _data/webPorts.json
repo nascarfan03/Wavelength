@@ -231,10 +231,10 @@
     "description": ""
   },
   {
-    "name": "Pizza Tower 1.1.0 Web Port",
+    "name": "Pizza Tower",
     "slug": "pizza-tower",
     "path": "pizza-tower/index.html",
-    "thumbnail": "webp/pizza.webp",
+    "thumbnail": "webp/pizzatower.webp",
     "description": ""
   },
   {
