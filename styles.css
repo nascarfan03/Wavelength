@@ -331,8 +331,8 @@ body {
 
 .games-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
     max-height: 60vh;
     overflow-y: auto;
     padding: 4px;
@@ -359,7 +359,7 @@ body {
 
 .game-card-thumb {
     width: 100%;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 1 / 1;
     overflow: hidden;
     background: #808080;
     border-bottom: 2px solid;

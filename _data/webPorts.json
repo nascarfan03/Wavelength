@@ -304,21 +304,21 @@
     "name": "ULTRAKILL Prelude",
     "slug": "ultrakill",
     "path": "ultrakill/index.html",
-    "thumbnail": "ultrakill/thumbnail.jpg",
+    "thumbnail": "ultra.webp",
     "description": ""
   },
   {
     "name": "UNDERTALE YELLOW",
     "slug": "undertale-yellow",
     "path": "undertale-yellow/index.html",
-    "thumbnail": "undertale-yellow/thumbnail.jpg",
+    "thumbnail": "udy.webp",
     "description": ""
   },
   {
     "name": "webfishing",
     "slug": "web-fishing",
     "path": "web-fishing/index.html",
-    "thumbnail": "web-fishing/thumbnail.jpg",
+    "thumbnail": "web.webp",
     "description": ""
   },
   {

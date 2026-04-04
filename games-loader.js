@@ -24,9 +24,9 @@
 
   const CHUNK_SIZE = 50;
   const TYPE_LABELS = {
-    html: "HTML5",
-    ruffle: "Flash",
-    webPorts: "Web Port"
+    html: "html5",
+    ruffle: "flash",
+    webPorts: "web port"
   };
 
   let baseUrls = {};
@@ -133,7 +133,8 @@
 
   function buildCard(game) {
     const baseUrl = baseUrls[game.type] || "";
-    const thumbUrl = `${baseUrl}${game.thumbnail}`;
+    // Thumbnails are stored locally in assets/games/
+    const thumbUrl = `assets/games/${game.thumbnail}`;
     const typeLabel = TYPE_LABELS[game.type] || game.type;
 
     const card = document.createElement("div");
