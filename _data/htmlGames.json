@@ -1585,42 +1585,10 @@
   },
   {
     "name": "Index of /cookieclicker/img",
-    "slug": "img",
-    "path": "img/index.html",
-    "cdn": "html",
-    "thumbnail": "img/thumbnail.jpg",
-    "description": ""
-  },
-  {
-    "name": "Index of /cookieclicker/img",
     "slug": "ccbeta",
     "path": "ccbeta/index.html",
     "cdn": "html",
     "thumbnail": "ccbeta/thumbnail.jpg",
-    "description": ""
-  },
-  {
-    "name": "Index of /cookieclicker/img",
-    "slug": "img",
-    "path": "img/index.html",
-    "cdn": "html",
-    "thumbnail": "img/thumbnail.jpg",
-    "description": ""
-  },
-  {
-    "name": "Index of /cookieclicker/snd",
-    "slug": "snd",
-    "path": "snd/index.html",
-    "cdn": "html",
-    "thumbnail": "snd/thumbnail.jpg",
-    "description": ""
-  },
-  {
-    "name": "Index of /cookieclicker/snd",
-    "slug": "snd",
-    "path": "snd/index.html",
-    "cdn": "html",
-    "thumbnail": "snd/thumbnail.jpg",
     "description": ""
   },
   {
