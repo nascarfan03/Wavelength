@@ -217,27 +217,20 @@
     const gameUrl = window.__CURRENT_GAME_URL__;
     if (!gameUrl) return;
 
-    // Open in about:blank and write iframe to it (cloaked)
-    const win = window.open("about:blank", "_blank");
+    // Open about:blank and inject iframe (cloaked URL)
+    const win = window.open();
     if (win) {
-      win.document.write(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <title>Google</title>
-          <link rel="icon" href="https://www.google.com/favicon.ico">
-          <style>
-            * { margin: 0; padding: 0; }
-            html, body { height: 100%; overflow: hidden; }
-            iframe { width: 100%; height: 100%; border: none; }
-          </style>
-        </head>
-        <body>
-          <iframe src="${gameUrl}" allowfullscreen></iframe>
-        </body>
-        </html>
-      `);
-      win.document.close();
+      const iframe = win.document.createElement('iframe');
+      iframe.style.width = "100%";
+      iframe.style.height = "100%";
+      iframe.style.border = "none";
+      iframe.style.position = "fixed";
+      iframe.style.top = "0";
+      iframe.style.left = "0";
+      iframe.src = gameUrl;
+      win.document.body.style.margin = "0";
+      win.document.body.style.overflow = "hidden";
+      win.document.body.appendChild(iframe);
     }
   };
 
