@@ -1,3 +1,6 @@
+---
+permalink: /index.html
+---
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -89,14 +92,14 @@
 
               <!-- Play View (iframe) -->
               <div id="games-play-view" style="display:none;">
-                <div class="play-header">
-                  <button class="win-btn" onclick="closeGame()">← Back to Games</button>
-                  <span id="play-title" class="play-title">Game</span>
-                  <span id="play-type" class="play-type-badge"></span>
-                </div>
-                <div class="play-frame-wrap">
-                  <iframe id="game-iframe" class="game-iframe" allowfullscreen 
+                <button class="back-btn win-btn" onclick="closeGame()">← back</button>
+                <div class="iframe-container">
+                  <iframe id="game-iframe" class="gameframe" allowfullscreen 
                     sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock allow-top-navigation"></iframe>
+                </div>
+                <div class="iframe-buttons">
+                  <button class="win-btn" onclick="toggleFullscreen()">fullscreen</button>
+                  <button class="win-btn" onclick="openCloaked()">open in new tab (cloaked)</button>
                 </div>
               </div>
 
@@ -191,6 +194,25 @@
 
         </div>
     </div>
+
+    {# ═══════════════════════════════════════════════════════════════════
+       ELEVENTY INJECTS GAME DATA HERE AT BUILD TIME
+       Edit _data/htmlGames.json, ruffleGames.json, or webPorts.json to add games!
+       ═══════════════════════════════════════════════════════════════════ #}
+    <script>
+      window.__BASE_URLS__ = {{ baseUrls | dump | safe }};
+      window.__GAMES_DATA__ = [
+        {% for g in htmlGames %}
+          { "name": {{ g.name | dump | safe }}, "slug": {{ g.slug | dump | safe }}, "path": {{ g.path | dump | safe }}, "thumbnail": {{ g.thumbnail | dump | safe }}, "description": {{ g.description | dump | safe }}, "type": "html" },
+        {% endfor %}
+        {% for g in ruffleGames %}
+          { "name": {{ g.name | dump | safe }}, "slug": {{ g.slug | dump | safe }}, "path": {{ g.path | dump | safe }}, "thumbnail": {{ g.thumbnail | dump | safe }}, "description": {{ g.description | dump | safe }}, "type": "ruffle" },
+        {% endfor %}
+        {% for g in webPorts %}
+          { "name": {{ g.name | dump | safe }}, "slug": {{ g.slug | dump | safe }}, "path": {{ g.path | dump | safe }}, "thumbnail": {{ g.thumbnail | dump | safe }}, "description": {{ g.description | dump | safe }}, "type": "webPorts" },
+        {% endfor %}
+      ];
+    </script>
 
     <script src="games-loader.js"></script>
     <script>

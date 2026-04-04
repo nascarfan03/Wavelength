@@ -1,0 +1,12 @@
+{
+  "name": "wavelength",
+  "version": "1.0.0",
+  "description": "A games website that just happens to be UBG",
+  "scripts": {
+    "start": "eleventy --serve --port=8000",
+    "build": "eleventy"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "^3.0.0"
+  }
+}

@@ -1,0 +1,16 @@
+[
+  {
+    "name": "Cut the Rope",
+    "slug": "cut-the-rope",
+    "path": "CutTheRope/index.html",
+    "thumbnail": "CutTheRope/thumbnail.jpg",
+    "description": "Feed candy to Om Nom by cutting ropes in this physics puzzle game."
+  },
+  {
+    "name": "Example HTML Game",
+    "slug": "example-html-game",
+    "path": "ExampleGame/index.html",
+    "thumbnail": "ExampleGame/thumbnail.jpg",
+    "description": "An example HTML5 game."
+  }
+]
