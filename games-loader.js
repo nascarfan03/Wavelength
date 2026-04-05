@@ -261,7 +261,17 @@
     // For webPorts, try to load individual credits
     if (game.type === 'webPorts') {
       try {
-        const creditsUrl = `credits/ports/${game.slug}/credits.txt`;
+        // Get credits folder name from mapping
+        const creditsMapping = window.__CREDITS_MAPPING__ || {};
+        const creditsFolder = creditsMapping[game.slug];
+        
+        if (!creditsFolder) {
+          showDefaultCredits(contentEl);
+          document.getElementById('game-credits-modal').style.display = 'flex';
+          return;
+        }
+        
+        const creditsUrl = `credits/ports/${creditsFolder}/credits.txt`;
         const response = await fetch(creditsUrl);
         
         if (response.ok) {

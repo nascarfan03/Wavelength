@@ -220,6 +220,7 @@ permalink: /index.html
        ═══════════════════════════════════════════════════════════════════ #}
     <script>
       window.__BASE_URLS__ = {{ baseUrls | dump | safe }};
+      window.__CREDITS_MAPPING__ = {{ creditsMapping | dump | safe }};
       window.__GAMES_DATA__ = [
         {% for g in htmlGames %}
           { "name": {{ g.name | dump | safe }}, "slug": {{ g.slug | dump | safe }}, "path": {{ g.path | dump | safe }}, "thumbnail": {{ g.thumbnail | dump | safe }}, "description": {{ g.description | dump | safe }}, "type": "html" },
