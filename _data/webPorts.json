@@ -369,5 +369,12 @@
     "path": "fnae/index.html",
     "thumbnail": "png/fnae.png",
     "description": ""
+  },
+    {
+    "name": "Minecraft Pocket Edition",
+    "slug": "mcpe",
+    "path": "mcpe/index.html",
+    "thumbnail": "png/mcpe.png",
+    "description": ""
   }
 ]
