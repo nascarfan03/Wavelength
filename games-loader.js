@@ -1,10 +1,12 @@
 /**
  * games-loader.js
  * Universal Fetch-and-Inject Game Loader for Wavelength UI.
- * * Logic:
+ *
+ * Logic:
  * - HTML/Ruffle: Fetches from @master branch via Statically
- * - Web Ports: Fetches from @main branch via Statically
- * - Injection: Uses document.write + <base> tag to ensure relative assets load from CDN.
+ * - Web Ports:   Fetches from @main branch via Statically
+ * - Injection:   Uses document.write + <base> tag so relative assets
+ *                resolve correctly from the CDN.
  */
 
 (function () {
@@ -28,11 +30,11 @@
   let grid, sentinel, statusEl, searchEl, sortEl;
 
   function init() {
-    grid = document.getElementById("games-grid");
+    grid     = document.getElementById("games-grid");
     sentinel = document.getElementById("games-sentinel");
     statusEl = document.getElementById("games-status");
     searchEl = document.getElementById("games-search");
-    sortEl = document.getElementById("games-sort");
+    sortEl   = document.getElementById("games-sort");
 
     if (!grid) return;
 
@@ -66,14 +68,14 @@
     }, { root: grid, rootMargin: "200px" });
     observer.observe(sentinel);
 
-    window.onGamesTabVisible = function() {
+    window.onGamesTabVisible = function () {
       observer.unobserve(sentinel);
       observer.observe(sentinel);
     };
   }
 
   function applyFilters() {
-    const query = (searchEl?.value || "").trim().toLowerCase();
+    const query     = (searchEl?.value || "").trim().toLowerCase();
     const sortValue = sortEl?.value || "alpha-asc";
 
     let result = currentFilter === "all"
@@ -90,7 +92,7 @@
     });
 
     filteredGames = result;
-    loadedCount = 0;
+    loadedCount   = 0;
     while (grid.firstChild && grid.firstChild !== sentinel) {
       grid.removeChild(grid.firstChild);
     }
@@ -105,21 +107,21 @@
 
     loading = true;
     const slice = filteredGames.slice(loadedCount, loadedCount + CHUNK_SIZE);
-    const frag = document.createDocumentFragment();
+    const frag  = document.createDocumentFragment();
     slice.forEach(game => frag.appendChild(buildCard(game)));
 
     grid.insertBefore(frag, sentinel);
     loadedCount += slice.length;
-    loading = false;
+    loading      = false;
 
     const remaining = filteredGames.length - loadedCount;
-    setStatus(remaining > 0 
-      ? `Showing ${loadedCount} of ${filteredGames.length} games` 
+    setStatus(remaining > 0
+      ? `Showing ${loadedCount} of ${filteredGames.length} games`
       : `${filteredGames.length} games`);
   }
 
   function buildCard(game) {
-    const thumbUrl = `assets/games/${game.thumbnail}`;
+    const thumbUrl  = `assets/games/${game.thumbnail}`;
     const typeLabel = TYPE_LABELS[game.type] || game.type;
 
     const card = document.createElement("div");
@@ -158,158 +160,211 @@
     imgObserver.observe(img);
   }
 
+  // ---------------------------------------------------------------------------
+  // URL helpers
+  // ---------------------------------------------------------------------------
+
   /**
-   * PLAY GAME
-   * Explicitly matches the branch based on the game type.
+   * Safely joins a CDN base URL and a game path with exactly one slash
+   * between them, regardless of whether either side has a trailing/leading slash.
+   *
+   * joinUrl("https://cdn.statically.io/gh/ajtabjs/wl-main@master/", "games/foo/index.html")
+   *   → "https://cdn.statically.io/gh/ajtabjs/wl-main@master/games/foo/index.html"
+   *
+   * joinUrl("https://cdn.statically.io/gh/ajtabjs/wl-main@master/", "/games/foo/index.html")
+   *   → "https://cdn.statically.io/gh/ajtabjs/wl-main@master/games/foo/index.html"
    */
+  function joinUrl(base, path) {
+    return base.replace(/\/?$/, "/") + String(path).replace(/^\//, "");
+  }
+
+  /**
+   * Returns the directory portion of a URL (everything up to and including
+   * the last "/"), used to set the <base href> for relative asset resolution.
+   *
+   * dirUrl("https://cdn.../games/foo/index.html")
+   *   → "https://cdn.../games/foo/"
+   */
+  function dirUrl(url) {
+    return url.substring(0, url.lastIndexOf("/") + 1);
+  }
+
+  // ---------------------------------------------------------------------------
+  // PLAY GAME
+  // ---------------------------------------------------------------------------
+
   async function playGame(slug, type) {
     const game = allGames.find(g => g.slug === slug && g.type === type);
     if (!game) return;
 
-    // Use the explicit type to find the correct Statically branch from baseUrls.json
-    const cdnKey = game.cdn || game.type; 
+    // Pick CDN key: game.cdn if set, otherwise game.type.
+    // Maps to keys in baseUrls.json:
+    //   "html"     → @master branch
+    //   "ruffle"   → @master branch  (self-contained HTML; SWF loads from jsDelivr)
+    //   "webPorts" → @main branch
+    const cdnKey  = game.cdn || game.type;
     const baseUrl = baseUrls[cdnKey] || "";
-    
-    // Construct the full URL
-    const gameUrl = `${baseUrl}${game.path}`;
 
-    console.log(`Loading [${cdnKey}] from: ${gameUrl}`);
+    // joinUrl prevents double-slashes when game.path starts with "/"
+    const gameUrl = joinUrl(baseUrl, game.path);
 
-    window.__CURRENT_GAME__ = game;
+    console.log(`[games-loader] type=${type} cdnKey=${cdnKey}`);
+    console.log(`[games-loader] baseUrl → ${baseUrl}`);
+    console.log(`[games-loader] gameUrl → ${gameUrl}`);
+
+    window.__CURRENT_GAME__     = game;
     window.__CURRENT_GAME_URL__ = gameUrl;
 
     document.getElementById("games-list-view").style.display = "none";
     document.getElementById("games-play-view").style.display = "block";
-    
+
     const iframe = document.getElementById("game-iframe");
     iframe.style.display = "block";
 
     try {
       const response = await fetch(gameUrl + "?t=" + Date.now());
-      if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const html = await response.text();
 
-      // Base directory for assets must be the folder containing index.html
-      const baseDir = gameUrl.substring(0, gameUrl.lastIndexOf('/') + 1);
-      
+      // <base href> points to the game's folder so all relative paths
+      // (assets, scripts, SWF absolute URLs via jsDelivr) resolve correctly.
+      const baseDir   = dirUrl(gameUrl);
       const iframeDoc = iframe.contentWindow.document;
       iframeDoc.open();
-      iframeDoc.write(`<base href="${baseDir}">${html}`);
+      iframeDoc.write(`<base href="${escHtml(baseDir)}">${html}`);
       iframeDoc.close();
 
     } catch (err) {
-      console.warn("Injection failed. Falling back to SRC attribute.", err);
+      console.warn("[games-loader] Injection failed, falling back to iframe src.", err);
       iframe.src = gameUrl;
     }
-    
+
     const messageEl = document.getElementById("cloaked-message");
     if (messageEl) messageEl.style.display = "none";
   }
 
   window.playGame = playGame;
 
-  window.closeGame = function() {
+  // ---------------------------------------------------------------------------
+  // CLOSE GAME
+  // ---------------------------------------------------------------------------
+
+  window.closeGame = function () {
     document.getElementById("games-play-view").style.display = "none";
     document.getElementById("games-list-view").style.display = "block";
+
     const iframe = document.getElementById("game-iframe");
-    
     try {
       const iframeDoc = iframe.contentWindow.document;
       iframeDoc.open();
-      iframeDoc.write(""); 
+      iframeDoc.write("");
       iframeDoc.close();
-    } catch(e) {}
-    
+    } catch (e) { /* cross-origin guard */ }
+
     iframe.src = "";
-    
+
     const messageEl = document.getElementById("cloaked-message");
     if (messageEl) messageEl.style.display = "none";
-    
+
     window.__CURRENT_GAME_URL__ = null;
-    window.__CURRENT_GAME__ = null;
+    window.__CURRENT_GAME__     = null;
   };
 
-  window.toggleFullscreen = function() {
+  // ---------------------------------------------------------------------------
+  // FULLSCREEN
+  // ---------------------------------------------------------------------------
+
+  window.toggleFullscreen = function () {
     const iframe = document.getElementById("game-iframe");
-    if (iframe.requestFullscreen) iframe.requestFullscreen();
+    if      (iframe.requestFullscreen)       iframe.requestFullscreen();
     else if (iframe.webkitRequestFullscreen) iframe.webkitRequestFullscreen();
-    else if (iframe.msRequestFullscreen) iframe.msRequestFullscreen();
+    else if (iframe.msRequestFullscreen)     iframe.msRequestFullscreen();
   };
 
-  /**
-   * OPEN CLOAKED
-   */
-  window.openCloaked = async function() {
+  // ---------------------------------------------------------------------------
+  // OPEN CLOAKED
+  // ---------------------------------------------------------------------------
+
+  window.openCloaked = async function () {
     const gameUrl = window.__CURRENT_GAME_URL__;
-    const game = window.__CURRENT_GAME__;
+    const game    = window.__CURRENT_GAME__;
     if (!gameUrl || !game) return;
 
     const win = window.open();
-    if (win) {
-      win.document.body.style.margin = "0";
-      win.document.body.style.overflow = "hidden";
-      win.document.title = game.name || "Game";
+    if (!win) return;
 
-      try {
-        const response = await fetch(gameUrl + "?t=" + Date.now());
-        const html = await response.text();
-        const baseDir = gameUrl.substring(0, gameUrl.lastIndexOf('/') + 1);
+    win.document.body.style.margin   = "0";
+    win.document.body.style.overflow = "hidden";
+    win.document.title = game.name || "Game";
 
-        win.document.open();
-        win.document.write(`<base href="${baseDir}">${html}`);
-        win.document.close();
-      } catch (err) {
-        const iframe = win.document.createElement('iframe');
-        iframe.style.cssText = "width:100%;height:100%;border:none;position:fixed;top:0;left:0;";
-        iframe.src = gameUrl;
-        win.document.body.appendChild(iframe);
-      }
+    try {
+      const response = await fetch(gameUrl + "?t=" + Date.now());
+      const html     = await response.text();
+      const baseDir  = dirUrl(gameUrl);
 
-      const localIframe = document.getElementById("game-iframe");
-      try {
-          const localDoc = localIframe.contentWindow.document;
-          localDoc.open(); localDoc.write(""); localDoc.close();
-      } catch(e) {}
-      
-      localIframe.src = "";
-      localIframe.style.display = "none";
-      
-      let messageEl = document.getElementById("cloaked-message");
-      if (!messageEl) {
-        const container = document.querySelector(".iframe-container");
-        messageEl = document.createElement("div");
-        messageEl.id = "cloaked-message";
-        messageEl.style.cssText = "display: flex; align-items: center; justify-content: center; height: 100%; text-align: center; padding: 20px; font-size: 14px; color: #000080; font-weight: bold;";
-        container.appendChild(messageEl);
-      }
-      messageEl.style.display = "flex";
-      messageEl.textContent = "Game opened in new tab (cloaked).";
+      win.document.open();
+      win.document.write(`<base href="${escHtml(baseDir)}">${html}`);
+      win.document.close();
+
+    } catch (err) {
+      const iframeFb = win.document.createElement("iframe");
+      iframeFb.style.cssText = "width:100%;height:100%;border:none;position:fixed;top:0;left:0;";
+      iframeFb.src = gameUrl;
+      win.document.body.appendChild(iframeFb);
     }
+
+    // Clear the local iframe
+    const localIframe = document.getElementById("game-iframe");
+    try {
+      const localDoc = localIframe.contentWindow.document;
+      localDoc.open(); localDoc.write(""); localDoc.close();
+    } catch (e) { /* cross-origin guard */ }
+
+    localIframe.src           = "";
+    localIframe.style.display = "none";
+
+    let messageEl = document.getElementById("cloaked-message");
+    if (!messageEl) {
+      const container = document.querySelector(".iframe-container");
+      messageEl           = document.createElement("div");
+      messageEl.id        = "cloaked-message";
+      messageEl.style.cssText =
+        "display:flex;align-items:center;justify-content:center;" +
+        "height:100%;text-align:center;padding:20px;font-size:14px;" +
+        "color:#000080;font-weight:bold;";
+      container.appendChild(messageEl);
+    }
+    messageEl.style.display = "flex";
+    messageEl.textContent   = "Game opened in new tab (cloaked).";
   };
 
-  window.credits = async function() {
+  // ---------------------------------------------------------------------------
+  // CREDITS
+  // ---------------------------------------------------------------------------
+
+  window.credits = async function () {
     const game = window.__CURRENT_GAME__;
     if (!game) return;
 
-    if (typeof switchTab === 'function') switchTab('games', null);
+    if (typeof switchTab === "function") switchTab("games", null);
 
-    const contentEl = document.getElementById('game-credits-content');
-    
-    if (game.type === 'webPorts') {
+    const contentEl = document.getElementById("game-credits-content");
+
+    if (game.type === "webPorts") {
       try {
         const creditsMapping = window.__CREDITS_MAPPING__ || {};
-        const creditsFolder = creditsMapping[game.slug];
-        
+        const creditsFolder  = creditsMapping[game.slug];
+
         if (!creditsFolder) {
           showDefaultCredits(contentEl);
         } else {
           const creditsUrl = `credits/ports/${creditsFolder}/credits.txt`;
-          const response = await fetch(creditsUrl);
+          const response   = await fetch(creditsUrl);
           if (response.ok) {
             const text = await response.text();
-            contentEl.innerHTML = text.split('\n').map(line => 
-              line.trim() ? `<p style="margin:4px 0;">${escHtml(line)}</p>` : '<br>'
-            ).join('');
+            contentEl.innerHTML = text.split("\n").map(line =>
+              line.trim() ? `<p style="margin:4px 0;">${escHtml(line)}</p>` : "<br>"
+            ).join("");
           } else {
             showDefaultCredits(contentEl);
           }
@@ -320,7 +375,8 @@
     } else {
       showDefaultCredits(contentEl);
     }
-    document.getElementById('game-credits-modal').style.display = 'flex';
+
+    document.getElementById("game-credits-modal").style.display = "flex";
   };
 
   function showDefaultCredits(contentEl) {
@@ -330,21 +386,33 @@
     `;
   }
 
+  // ---------------------------------------------------------------------------
+  // Utilities
+  // ---------------------------------------------------------------------------
+
   function setStatus(msg) {
     if (statusEl) statusEl.textContent = msg;
   }
 
   function escHtml(str) {
-    return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    return String(str)
+      .replace(/&/g,  "&amp;")
+      .replace(/</g,  "&lt;")
+      .replace(/>/g,  "&gt;")
+      .replace(/"/g,  "&quot;");
   }
 
   function debounce(fn, delay) {
     let timer;
-    return function(...args) {
+    return function (...args) {
       clearTimeout(timer);
       timer = setTimeout(() => fn.apply(this, args), delay);
     };
   }
+
+  // ---------------------------------------------------------------------------
+  // Boot
+  // ---------------------------------------------------------------------------
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);
