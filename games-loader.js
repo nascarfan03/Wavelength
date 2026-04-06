@@ -1,22 +1,7 @@
 /**
  * games-loader.js
  * Loads games from Eleventy-injected data and renders them in the Wavelength UI.
- * 
- * To add games: edit the JSON files in /_data/ folder:
- *   - htmlGames.json   → HTML5 games
- *   - ruffleGames.json → Flash/Ruffle games
- *   - webPorts.json    → Web ports
- *
- * Then run: npm run build (or npm start for dev server)
- *
- * Each game entry format:
- * {
- *   "name": "Game Name",
- *   "slug": "game-slug",        // unique ID for URL
- *   "path": "GameFolder/index.html",
- *   "thumbnail": "GameFolder/thumbnail.jpg",
- *   "description": "Game description."
- * }
+ * Modified to bypass jsDelivr "plain text" restrictions via Fetch & Injection.
  */
 
 (function () {
@@ -48,9 +33,8 @@
 
     if (!grid) return;
 
-    // Use Eleventy-injected data (set in index.njk at build time)
     if (!window.__GAMES_DATA__ || !window.__BASE_URLS__) {
-      console.error("games-loader: __GAMES_DATA__ or __BASE_URLS__ not found. Did Eleventy build?");
+      console.error("games-loader: __GAMES_DATA__ or __BASE_URLS__ not found.");
       grid.innerHTML = '<div class="games-error">Game data not found. Run npm run build.</div>';
       return;
     }
@@ -60,11 +44,9 @@
 
     applyFilters();
 
-    // Event listeners
     searchEl?.addEventListener("input", debounce(applyFilters, 200));
     sortEl?.addEventListener("change", applyFilters);
 
-    // Filter buttons
     document.querySelectorAll(".games-filter-btn").forEach(btn => {
       btn.addEventListener("click", () => {
         document.querySelectorAll(".games-filter-btn").forEach(b => b.classList.remove("active"));
@@ -74,7 +56,6 @@
       });
     });
 
-    // Infinite scroll - use grid as root since it's the scrollable container
     const observer = new IntersectionObserver(entries => {
       entries.forEach(entry => {
         if (entry.isIntersecting) loadNextChunk();
@@ -82,8 +63,6 @@
     }, { root: grid, rootMargin: "200px" });
     observer.observe(sentinel);
 
-    // Expose function to re-check intersection when tab becomes visible
-    // (IntersectionObserver doesn't fire for elements in hidden parents)
     window.onGamesTabVisible = function() {
       observer.unobserve(sentinel);
       observer.observe(sentinel);
@@ -94,17 +73,14 @@
     const query = (searchEl?.value || "").trim().toLowerCase();
     const sortValue = sortEl?.value || "alpha-asc";
 
-    // Filter by type
     let result = currentFilter === "all"
       ? allGames.slice()
       : allGames.filter(g => g.type === currentFilter);
 
-    // Filter by search
     if (query) {
       result = result.filter(g => g.name.toLowerCase().includes(query));
     }
 
-    // Sort
     result.sort((a, b) => {
       const cmp = a.name.localeCompare(b.name);
       return sortValue === "alpha-desc" ? -cmp : cmp;
@@ -112,7 +88,6 @@
 
     filteredGames = result;
     loadedCount = 0;
-    // Clear grid but keep sentinel at the end
     while (grid.firstChild && grid.firstChild !== sentinel) {
       grid.removeChild(grid.firstChild);
     }
@@ -131,7 +106,6 @@
 
     slice.forEach(game => frag.appendChild(buildCard(game)));
 
-    // Insert before sentinel so sentinel stays at the end
     grid.insertBefore(frag, sentinel);
     loadedCount += slice.length;
     loading = false;
@@ -143,10 +117,6 @@
   }
 
   function buildCard(game) {
-    // Use game.cdn if set, otherwise fall back to game.type
-    const cdn = game.cdn || game.type;
-    const baseUrl = baseUrls[cdn] || "";
-    // Thumbnails are stored locally in assets/games/
     const thumbUrl = `assets/games/${game.thumbnail}`;
     const typeLabel = TYPE_LABELS[game.type] || game.type;
 
@@ -166,7 +136,6 @@
       </div>
     `;
 
-    // Lazy load image
     const img = card.querySelector("img.lazy");
     lazyLoadImg(img);
 
@@ -188,33 +157,48 @@
     imgObserver.observe(img);
   }
 
-  function playGame(slug, type) {
-    // Find game data
+  /**
+   * PLAY GAME - Uses Fetch & Document.Write to bypass jsDelivr mime-type restrictions
+   */
+  async function playGame(slug, type) {
     const game = allGames.find(g => g.slug === slug && g.type === type);
     if (!game) return;
 
-    // Use game.cdn if set, otherwise fall back to game.type
     const cdn = game.cdn || type;
     const baseUrl = baseUrls[cdn] || "";
     const gameUrl = `${baseUrl}${game.path}`;
 
-    // Store current game data for credits
     window.__CURRENT_GAME__ = game;
     window.__CURRENT_GAME_URL__ = gameUrl;
 
-    // Switch to iframe view
     document.getElementById("games-list-view").style.display = "none";
     document.getElementById("games-play-view").style.display = "block";
     
     const iframe = document.getElementById("game-iframe");
     iframe.style.display = "block";
-    iframe.src = gameUrl;
-    
-    // Hide cloaked message if it exists
-    const messageEl = document.getElementById("cloaked-message");
-    if (messageEl) {
-      messageEl.style.display = "none";
+
+    try {
+      // 1. Fetch the raw HTML as text
+      const response = await fetch(gameUrl + "?t=" + Date.now());
+      if (!response.ok) throw new Error("Could not fetch game from CDN");
+      const html = await response.text();
+
+      // 2. Identify the base directory so relative assets (js/css/images) work
+      const baseDir = gameUrl.substring(0, gameUrl.lastIndexOf('/') + 1);
+      
+      // 3. Inject content into iframe
+      const iframeDoc = iframe.contentWindow.document;
+      iframeDoc.open();
+      iframeDoc.write(`<base href="${baseDir}">${html}`);
+      iframeDoc.close();
+
+    } catch (err) {
+      console.error("Injection failed, falling back to standard SRC:", err);
+      iframe.src = gameUrl;
     }
+    
+    const messageEl = document.getElementById("cloaked-message");
+    if (messageEl) messageEl.style.display = "none";
   }
 
   window.playGame = playGame;
@@ -222,15 +206,21 @@
   window.closeGame = function() {
     document.getElementById("games-play-view").style.display = "none";
     document.getElementById("games-list-view").style.display = "block";
-    const iframe = document.getElementById("game-iframe");
-    iframe.src = "";
-    iframe.style.display = "block";
     
-    // Hide cloaked message if it exists
+    const iframe = document.getElementById("game-iframe");
+    
+    // Wipe the iframe content
+    try {
+      const iframeDoc = iframe.contentWindow.document;
+      iframeDoc.open();
+      iframeDoc.write("");
+      iframeDoc.close();
+    } catch(e) {}
+    
+    iframe.src = "";
+    
     const messageEl = document.getElementById("cloaked-message");
-    if (messageEl) {
-      messageEl.style.display = "none";
-    }
+    if (messageEl) messageEl.style.display = "none";
     
     window.__CURRENT_GAME_URL__ = null;
     window.__CURRENT_GAME__ = null;
@@ -238,41 +228,50 @@
 
   window.toggleFullscreen = function() {
     const iframe = document.getElementById("game-iframe");
-    if (iframe.requestFullscreen) {
-      iframe.requestFullscreen();
-    } else if (iframe.webkitRequestFullscreen) {
-      iframe.webkitRequestFullscreen();
-    } else if (iframe.msRequestFullscreen) {
-      iframe.msRequestFullscreen();
-    }
+    if (iframe.requestFullscreen) iframe.requestFullscreen();
+    else if (iframe.webkitRequestFullscreen) iframe.webkitRequestFullscreen();
+    else if (iframe.msRequestFullscreen) iframe.msRequestFullscreen();
   };
 
-  window.openCloaked = function() {
+  /**
+   * OPEN CLOAKED - Injects code into a new about:blank window
+   */
+  window.openCloaked = async function() {
     const gameUrl = window.__CURRENT_GAME_URL__;
     if (!gameUrl) return;
 
-    // Open about:blank and inject iframe (cloaked URL)
     const win = window.open();
     if (win) {
-      const iframe = win.document.createElement('iframe');
-      iframe.style.width = "100%";
-      iframe.style.height = "100%";
-      iframe.style.border = "none";
-      iframe.style.position = "fixed";
-      iframe.style.top = "0";
-      iframe.style.left = "0";
-      iframe.src = gameUrl;
       win.document.body.style.margin = "0";
       win.document.body.style.overflow = "hidden";
-      win.document.body.appendChild(iframe);
+      win.document.title = "Game";
 
-      // Clear the local iframe and show message
+      try {
+        const response = await fetch(gameUrl + "?t=" + Date.now());
+        const html = await response.text();
+        const baseDir = gameUrl.substring(0, gameUrl.lastIndexOf('/') + 1);
+
+        win.document.open();
+        win.document.write(`<base href="${baseDir}">${html}`);
+        win.document.close();
+      } catch (err) {
+        const iframe = win.document.createElement('iframe');
+        iframe.style.cssText = "width:100%;height:100%;border:none;position:fixed;top:0;left:0;";
+        iframe.src = gameUrl;
+        win.document.body.appendChild(iframe);
+      }
+
       const localIframe = document.getElementById("game-iframe");
       const container = document.querySelector(".iframe-container");
+      
+      try {
+          const localDoc = localIframe.contentWindow.document;
+          localDoc.open(); localDoc.write(""); localDoc.close();
+      } catch(e) {}
+      
       localIframe.src = "";
       localIframe.style.display = "none";
       
-      // Create or update message element
       let messageEl = document.getElementById("cloaked-message");
       if (!messageEl) {
         messageEl = document.createElement("div");
@@ -289,53 +288,42 @@
     const game = window.__CURRENT_GAME__;
     if (!game) return;
 
-    // Ensure we're on the games tab when showing the credits modal
-    switchTab('games', null);
+    if (typeof switchTab === 'function') switchTab('games', null);
 
     const contentEl = document.getElementById('game-credits-content');
     
-    // For webPorts, try to load individual credits
     if (game.type === 'webPorts') {
       try {
-        // Get credits folder name from mapping
         const creditsMapping = window.__CREDITS_MAPPING__ || {};
         const creditsFolder = creditsMapping[game.slug];
         
         if (!creditsFolder) {
           showDefaultCredits(contentEl);
-          document.getElementById('game-credits-modal').style.display = 'flex';
-          return;
-        }
-        
-        const creditsUrl = `credits/ports/${creditsFolder}/credits.txt`;
-        const response = await fetch(creditsUrl);
-        
-        if (response.ok) {
-          const text = await response.text();
-          // Convert text to HTML (preserve line breaks)
-          contentEl.innerHTML = text.split('\n').map(line => 
-            line.trim() ? `<p style="margin:4px 0;">${escHtml(line)}</p>` : '<br>'
-          ).join('');
         } else {
-          // Fallback to default credits
-          showDefaultCredits(contentEl);
+          const creditsUrl = `credits/ports/${creditsFolder}/credits.txt`;
+          const response = await fetch(creditsUrl);
+          if (response.ok) {
+            const text = await response.text();
+            contentEl.innerHTML = text.split('\n').map(line => 
+              line.trim() ? `<p style="margin:4px 0;">${escHtml(line)}</p>` : '<br>'
+            ).join('');
+          } else {
+            showDefaultCredits(contentEl);
+          }
         }
       } catch (err) {
-        console.error('Error loading credits:', err);
         showDefaultCredits(contentEl);
       }
     } else {
-      // For html/ruffle games, show default credits
       showDefaultCredits(contentEl);
     }
-    
     document.getElementById('game-credits-modal').style.display = 'flex';
   };
 
   function showDefaultCredits(contentEl) {
     contentEl.innerHTML = `
       <p><strong>Game Sources:</strong></p>
-      <p>3kh0<br>Armor Games<br>olyb/BinBashBanana<br>John Cooney/jmtb02<br>Kongregate<br>Radon Games<br>The Eagle Team<br>ThatOnePers0n<br>genizy/breadbb<br>truffled.lol<br>sky at selenite.cc<br>National Porting Association/webport.ing<br>gays dot' studio<br>bog/aukak<br>98corbins<br>wasm.com</p>
+      <p>3kh0<br>Armor Games<br>Kongregate<br>Radon Games<br>National Porting Association<br>wasm.com</p>
     `;
   }
 
@@ -348,11 +336,7 @@
   }
 
   function escHtml(str) {
-    return String(str)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;");
+    return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
 
   function debounce(fn, delay) {
@@ -363,7 +347,6 @@
     };
   }
 
-  // Boot
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);
   } else {
