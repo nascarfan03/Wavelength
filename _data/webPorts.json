@@ -341,5 +341,19 @@
     "path": "yume-nikki/index.html",
     "thumbnail": "gn/png/yume-nikki.png",
     "description": ""
+  },
+  {
+    "name": "Plants vs Zombies: Fusion",
+    "slug": "pvz-fusion",
+    "path": "pvz-fusion/index.html",
+    "thumbnail": "png/pvz-fusion.png",
+    "description": ""
+  },
+  {
+    "name": "Bad Game",
+    "slug": "badgame",
+    "path": "badgame/index.html",
+    "thumbnail": "png/badgame.png",
+    "description": ""
   }
 ]
