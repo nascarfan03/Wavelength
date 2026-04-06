@@ -12,6 +12,10 @@
 
   body {
    font-family: "Digital Disco", sans-serif;
+   letter-spacing: 0.5px;
+   line-height: 1.5;
+   -webkit-text-stroke: 1px white;
+   paint-order: stroke fill;
 }
 
 /* Digital Disco Thin */
@@ -38,6 +42,8 @@ body {
     align-items: center;
     height: 100vh;
     font-family:'Digital Disco Thin', 'Digital Disco', 'Arial', sans-serif;
+    letter-spacing: 0.5px;
+    line-height: 1.6;
 }
 
 .centered {
@@ -64,6 +70,9 @@ body {
     gap: 6px;
     font-weight: bold;
     font-size: 13px;
+    letter-spacing: 1px;
+    -webkit-text-stroke: 1px white;
+    paint-order: stroke fill;
 }
 
 .title-icon { width: 16px; height: 16px; }
@@ -102,6 +111,9 @@ body {
     background: #c0c0c0;
     cursor: pointer;
     font-family: inherit;
+    letter-spacing: 0.8px;
+    -webkit-text-stroke: 1px white;
+    paint-order: stroke fill;
 }
 
 .tab.active {
@@ -145,14 +157,16 @@ body {
     color: #fff;
     font-weight: bold;
     font-size: 11px;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
     padding: 3px 7px;
+    -webkit-text-stroke: 1px white;
+    paint-order: stroke fill;
 }
 
 .panel-body { padding: 10px 12px; }
 
 .welcome-banner { width: 100%; margin-bottom: 10px; }
-.welcome-text { font-size: 12px; line-height: 1.6; }
+.welcome-text { font-size: 12px; line-height: 1.8; letter-spacing: 0.5px; }
 .welcome-text p { margin-bottom: 8px; }
 
 .changelog {
@@ -169,8 +183,8 @@ body {
 }
 
 .log-date { font-size: 10px; color: #808080; font-weight: bold; }
-.log-title { font-weight: bold; font-size: 12px; color: #000080; margin: 2px 0; }
-.log-desc  { font-size: 11px; color: #333; line-height: 1.5; }
+.log-title { font-weight: bold; font-size: 12px; color: #000080; margin: 2px 0; letter-spacing: 0.5px; }
+.log-desc  { font-size: 11px; color: #333; line-height: 1.7; letter-spacing: 0.3px; }
 
 .tag { display: inline-block; font-size: 10px; padding: 1px 5px; border: 1px solid; margin-top: 4px; }
 .tag-new { border-color: #008000; color: #005000; background: #e0ffe0; }
@@ -183,21 +197,25 @@ body {
     text-align: center;
     font-weight: bold;
     font-size: 14px;
-    letter-spacing: 2px;
+    letter-spacing: 2.5px;
     border-bottom: 2px solid;
     border-color: #808080 #fff #fff #808080;
     padding-bottom: 8px;
     margin-bottom: 16px;
+    -webkit-text-stroke: 1px white;
+    paint-order: stroke fill;
 }
 
 .section-header {
     font-weight: bold;
     font-size: 12px;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
     background: #808080;
     color: #fff;
     padding: 2px 6px;
     margin-bottom: 6px;
+    -webkit-text-stroke: 1px white;
+    paint-order: stroke fill;
 }
 
 .credit-grid {
@@ -213,6 +231,7 @@ body {
     display: flex;
     align-items: center;
     gap: 5px;
+    letter-spacing: 0.5px;
 }
 
 .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
@@ -417,6 +436,7 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
     margin-bottom: 4px;
+    letter-spacing: 0.5px;
 }
 
 .game-card-type {
@@ -465,6 +485,7 @@ body {
     font-weight: bold;
     color: #000080;
     flex: 1;
+    letter-spacing: 0.8px;
 }
 
 .play-type-badge {
