@@ -397,5 +397,12 @@
     "path": "sm64fps/index.html",
     "thumbnail": "png/sm64fps.png",
     "description": ""
+  },
+  {
+    "name": "Apes vs Helium",
+    "slug": "avhport",
+    "path": "AVHPort/index.html",
+    "thumbnail": "webp/avh.webp",
+    "description": ""
   }
 ]
