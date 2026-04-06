@@ -74,7 +74,7 @@ body {
     font-weight: bold;
     font-size: 13px;
     letter-spacing: 1px;
-    -webkit-text-stroke: 1px white;
+    -webkit-text-stroke: 1px #000040;
     paint-order: stroke fill;
 }
 
@@ -162,7 +162,7 @@ body {
     font-size: 11px;
     letter-spacing: 1.5px;
     padding: 3px 7px;
-    -webkit-text-stroke: 1px white;
+    -webkit-text-stroke: 1px #000040;
     paint-order: stroke fill;
 }
 
@@ -217,7 +217,7 @@ body {
     color: #fff;
     padding: 2px 6px;
     margin-bottom: 6px;
-    -webkit-text-stroke: 1px white;
+    -webkit-text-stroke: 1px #404040;
     paint-order: stroke fill;
 }
 
