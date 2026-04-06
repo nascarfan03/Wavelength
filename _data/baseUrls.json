@@ -1,5 +1,5 @@
 {
-  "html": "https://cdn.jsdelivr.net/gh/ajtabjs/wl-main/",
-  "ruffle": "https://cdn.jsdelivr.net/gh/ajtabjs/wl-main/",
-  "webPorts": "https://cdn.jsdelivr.net/gh/ajtabjs/wl-main/"
+  "html": "https://cdn.statically.io/gh/ajtabjs/wl-main@master/",
+  "ruffle": "https://cdn.statically.io/gh/ajtabjs/wl-main@master/",
+  "webPorts": "https://cdn.statically.io/gh/ajtabjs/wl-main@main/"
 }
