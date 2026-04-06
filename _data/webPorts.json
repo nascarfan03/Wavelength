@@ -355,5 +355,12 @@
     "path": "badgame/index.html",
     "thumbnail": "png/badgame.png",
     "description": ""
+  },
+  {
+    "name": "Balatro",
+    "slug": "balatro",
+    "path": "balatro/index.html",
+    "thumbnail": "webp/bal.webp",
+    "description": ""
   }
 ]
