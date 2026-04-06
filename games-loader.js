@@ -1,7 +1,9 @@
 /**
  * games-loader.js
  * Loads games from Eleventy-injected data and renders them in the Wavelength UI.
- * Modified to bypass jsDelivr "plain text" restrictions via Fetch & Injection.
+ * * APPROACH: Fetches the HTML source and injects it into the iframe/window.
+ * This bypasses jsDelivr "text/plain" security headers and ensures all
+ * relative assets load from the correct CDN directory.
  */
 
 (function () {
@@ -34,8 +36,8 @@
     if (!grid) return;
 
     if (!window.__GAMES_DATA__ || !window.__BASE_URLS__) {
-      console.error("games-loader: __GAMES_DATA__ or __BASE_URLS__ not found.");
-      grid.innerHTML = '<div class="games-error">Game data not found. Run npm run build.</div>';
+      console.error("games-loader: Data not found. Ensure Eleventy build completed.");
+      grid.innerHTML = '<div class="games-error">Game data not found.</div>';
       return;
     }
 
@@ -96,7 +98,7 @@
 
   function loadNextChunk() {
     if (loading || loadedCount >= filteredGames.length) {
-      setStatus(filteredGames.length === 0 ? "No games found." : `${filteredGames.length} game${filteredGames.length !== 1 ? "s" : ""}`);
+      setStatus(filteredGames.length === 0 ? "No games found." : `${filteredGames.length} games`);
       return;
     }
 
@@ -113,7 +115,7 @@
     const remaining = filteredGames.length - loadedCount;
     setStatus(remaining > 0 
       ? `Showing ${loadedCount} of ${filteredGames.length} games` 
-      : `${filteredGames.length} game${filteredGames.length !== 1 ? "s" : ""}`);
+      : `${filteredGames.length} games`);
   }
 
   function buildCard(game) {
@@ -138,7 +140,6 @@
 
     const img = card.querySelector("img.lazy");
     lazyLoadImg(img);
-
     return card;
   }
 
@@ -158,7 +159,8 @@
   }
 
   /**
-   * PLAY GAME - Uses Fetch & Document.Write to bypass jsDelivr mime-type restrictions
+   * UNIVERSAL INJECTION LOADER
+   * Works for all types (html, ruffle, webPorts) that serve an index.html
    */
   async function playGame(slug, type) {
     const game = allGames.find(g => g.slug === slug && g.type === type);
@@ -178,22 +180,23 @@
     iframe.style.display = "block";
 
     try {
-      // 1. Fetch the raw HTML as text
+      // 1. Fetch the HTML
       const response = await fetch(gameUrl + "?t=" + Date.now());
-      if (!response.ok) throw new Error("Could not fetch game from CDN");
+      if (!response.ok) throw new Error("Fetch failed from CDN");
       const html = await response.text();
 
-      // 2. Identify the base directory so relative assets (js/css/images) work
+      // 2. Identify the folder directory for the <base> tag
       const baseDir = gameUrl.substring(0, gameUrl.lastIndexOf('/') + 1);
       
-      // 3. Inject content into iframe
+      // 3. Inject into the local iframe
       const iframeDoc = iframe.contentWindow.document;
       iframeDoc.open();
+      // We prepend the <base> tag so internal scripts load from the CDN folder
       iframeDoc.write(`<base href="${baseDir}">${html}`);
       iframeDoc.close();
 
     } catch (err) {
-      console.error("Injection failed, falling back to standard SRC:", err);
+      console.error("Injection failed, falling back to standard src:", err);
       iframe.src = gameUrl;
     }
     
@@ -209,11 +212,10 @@
     
     const iframe = document.getElementById("game-iframe");
     
-    // Wipe the iframe content
     try {
       const iframeDoc = iframe.contentWindow.document;
       iframeDoc.open();
-      iframeDoc.write("");
+      iframeDoc.write(""); // Clear memory
       iframeDoc.close();
     } catch(e) {}
     
@@ -234,17 +236,18 @@
   };
 
   /**
-   * OPEN CLOAKED - Injects code into a new about:blank window
+   * OPEN CLOAKED (about:blank)
    */
   window.openCloaked = async function() {
     const gameUrl = window.__CURRENT_GAME_URL__;
-    if (!gameUrl) return;
+    const game = window.__CURRENT_GAME__;
+    if (!gameUrl || !game) return;
 
     const win = window.open();
     if (win) {
       win.document.body.style.margin = "0";
       win.document.body.style.overflow = "hidden";
-      win.document.title = "Game";
+      win.document.title = game.name || "Game";
 
       try {
         const response = await fetch(gameUrl + "?t=" + Date.now());
@@ -255,12 +258,14 @@
         win.document.write(`<base href="${baseDir}">${html}`);
         win.document.close();
       } catch (err) {
+        // Ultimate fallback
         const iframe = win.document.createElement('iframe');
         iframe.style.cssText = "width:100%;height:100%;border:none;position:fixed;top:0;left:0;";
         iframe.src = gameUrl;
         win.document.body.appendChild(iframe);
       }
 
+      // Cleanup local view
       const localIframe = document.getElementById("game-iframe");
       const container = document.querySelector(".iframe-container");
       
@@ -280,7 +285,7 @@
         container.appendChild(messageEl);
       }
       messageEl.style.display = "flex";
-      messageEl.textContent = "Game opened in new tab (cloaked). Use the back button to return to the games list.";
+      messageEl.textContent = "Game opened in new tab (cloaked).";
     }
   };
 
