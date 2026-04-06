@@ -1,9 +1,10 @@
 /**
  * games-loader.js
- * Loads games from Eleventy-injected data and renders them in the Wavelength UI.
- * * APPROACH: Fetches the HTML source and injects it into the iframe/window.
- * This bypasses jsDelivr "text/plain" security headers and ensures all
- * relative assets load from the correct CDN directory.
+ * Universal Fetch-and-Inject Game Loader for Wavelength UI.
+ * * Logic:
+ * - HTML/Ruffle: Fetches from @master branch via Statically
+ * - Web Ports: Fetches from @main branch via Statically
+ * - Injection: Uses document.write + <base> tag to ensure relative assets load from CDN.
  */
 
 (function () {
@@ -35,12 +36,14 @@
 
     if (!grid) return;
 
+    // Use Eleventy-injected data
     if (!window.__GAMES_DATA__ || !window.__BASE_URLS__) {
-      console.error("games-loader: Data not found. Ensure Eleventy build completed.");
+      console.error("games-loader: Data not found. Ensure Eleventy built correctly.");
       grid.innerHTML = '<div class="games-error">Game data not found.</div>';
       return;
     }
 
+    // Mapping from your provided JSON
     baseUrls = window.__BASE_URLS__;
     allGames = window.__GAMES_DATA__;
 
@@ -105,7 +108,6 @@
     loading = true;
     const slice = filteredGames.slice(loadedCount, loadedCount + CHUNK_SIZE);
     const frag = document.createDocumentFragment();
-
     slice.forEach(game => frag.appendChild(buildCard(game)));
 
     grid.insertBefore(frag, sentinel);
@@ -159,13 +161,13 @@
   }
 
   /**
-   * UNIVERSAL INJECTION LOADER
-   * Works for all types (html, ruffle, webPorts) that serve an index.html
+   * PLAY GAME - The Core Injection Logic
    */
   async function playGame(slug, type) {
     const game = allGames.find(g => g.slug === slug && g.type === type);
     if (!game) return;
 
+    // Resolves to master or main based on your JSON
     const cdn = game.cdn || type;
     const baseUrl = baseUrls[cdn] || "";
     const gameUrl = `${baseUrl}${game.path}`;
@@ -180,23 +182,24 @@
     iframe.style.display = "block";
 
     try {
-      // 1. Fetch the HTML
+      // 1. Fetch the HTML content
       const response = await fetch(gameUrl + "?t=" + Date.now());
-      if (!response.ok) throw new Error("Fetch failed from CDN");
+      if (!response.ok) throw new Error("Fetch failed");
       const html = await response.text();
 
       // 2. Identify the folder directory for the <base> tag
       const baseDir = gameUrl.substring(0, gameUrl.lastIndexOf('/') + 1);
       
-      // 3. Inject into the local iframe
+      // 3. Open the iframe document and write the content
       const iframeDoc = iframe.contentWindow.document;
       iframeDoc.open();
-      // We prepend the <base> tag so internal scripts load from the CDN folder
+      // The <base> tag is vital: it tells the browser to resolve relative 
+      // paths (like scripts/css) against the CDN folder, not your local domain.
       iframeDoc.write(`<base href="${baseDir}">${html}`);
       iframeDoc.close();
 
     } catch (err) {
-      console.error("Injection failed, falling back to standard src:", err);
+      console.warn("Injection failed, using fallback src:", err);
       iframe.src = gameUrl;
     }
     
@@ -209,13 +212,13 @@
   window.closeGame = function() {
     document.getElementById("games-play-view").style.display = "none";
     document.getElementById("games-list-view").style.display = "block";
-    
     const iframe = document.getElementById("game-iframe");
     
+    // Clear iframe memory
     try {
       const iframeDoc = iframe.contentWindow.document;
       iframeDoc.open();
-      iframeDoc.write(""); // Clear memory
+      iframeDoc.write(""); 
       iframeDoc.close();
     } catch(e) {}
     
@@ -258,17 +261,13 @@
         win.document.write(`<base href="${baseDir}">${html}`);
         win.document.close();
       } catch (err) {
-        // Ultimate fallback
         const iframe = win.document.createElement('iframe');
         iframe.style.cssText = "width:100%;height:100%;border:none;position:fixed;top:0;left:0;";
         iframe.src = gameUrl;
         win.document.body.appendChild(iframe);
       }
 
-      // Cleanup local view
       const localIframe = document.getElementById("game-iframe");
-      const container = document.querySelector(".iframe-container");
-      
       try {
           const localDoc = localIframe.contentWindow.document;
           localDoc.open(); localDoc.write(""); localDoc.close();
@@ -279,9 +278,10 @@
       
       let messageEl = document.getElementById("cloaked-message");
       if (!messageEl) {
+        const container = document.querySelector(".iframe-container");
         messageEl = document.createElement("div");
         messageEl.id = "cloaked-message";
-        messageEl.style.cssText = "display: flex; align-items: center; justify-content: center; height: 100%; text-align: center; padding: 20px; font-size: 14px; color: #000080; font-weight: bold; letter-spacing: 0.5px;";
+        messageEl.style.cssText = "display: flex; align-items: center; justify-content: center; height: 100%; text-align: center; padding: 20px; font-size: 14px; color: #000080; font-weight: bold;";
         container.appendChild(messageEl);
       }
       messageEl.style.display = "flex";
