@@ -9,7 +9,7 @@ permalink: /index.html
     <title>Wavelength</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" href="./assets/icon-noborder.png">
-<script src="https://cdn.counter.dev/script.js" data-id="3a53e261-dd9c-4c39-9e87-9d97f844ae7c" data-utcoffset="-8"></script>
+    <script src="https://cdn.counter.dev/script.js" data-id="3a53e261-dd9c-4c39-9e87-9d97f844ae7c" data-utcoffset="-8"></script>
 </head>
 <body>
     <div class="window">
@@ -67,13 +67,11 @@ permalink: /index.html
                                   <div class="log-title">Added: Shop</div>
                                   <div class="log-desc">There is now a shop, albeit its not a shop, and it doesn't work yet</div>
                               </div>
-                                
                               <div class="log-entry">
                                     <div class="log-date">April 3, 2026</div>
                                   <div class="log-title">Added: GAMES</div>
                                   <div class="log-desc">Play your favorite games on wavelength!</div>
                               </div>
-                             
                           </div>
                       </div>
                   </div>
@@ -82,7 +80,7 @@ permalink: /index.html
 
             <!-- GAMES -->
             <div id="tab-games" class="tab-panel">
-              
+
               <!-- List View -->
               <div id="games-list-view">
                 <div class="games-controls">
@@ -106,12 +104,25 @@ permalink: /index.html
                 <div id="games-status" class="games-status"></div>
               </div>
 
-              <!-- Play View (iframe) -->
+              <!-- Play View -->
               <div id="games-play-view" style="display:none;">
                 <button class="back-btn win-btn" onclick="closeGame()">back</button>
-                <div class="iframe-container">
-                  <iframe id="game-iframe" class="gameframe" allowfullscreen 
-                    sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock allow-top-navigation"></iframe>
+                <div class="play-view-inner">
+
+                  <!-- CDN switcher sidebar -->
+                  <div class="cdn-switcher-panel">
+                    <div class="cdn-switcher-label">CDN</div>
+                    <div id="cdn-switcher"></div>
+                    <div class="cdn-indicator-label">Active:</div>
+                    <div id="cdn-indicator" class="cdn-indicator">Statically</div>
+                  </div>
+
+                  <!-- iframe -->
+                  <div class="iframe-container">
+                    <iframe id="game-iframe" class="gameframe" allowfullscreen
+                      sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock allow-top-navigation"></iframe>
+                  </div>
+
                 </div>
                 <div class="iframe-buttons">
                   <button class="win-btn" onclick="toggleFullscreen()">fullscreen</button>
@@ -145,7 +156,6 @@ permalink: /index.html
                 <div class="panel">
                   <div class="panel-header">
                     &#9670; Chat &nbsp;<span id="chat-user-label" style="font-weight:normal;font-size:10px;opacity:0.85;"></span>
-                    <span id="chat-user-label" style="font-weight:normal;font-size:10px;opacity:0.85;"></span>
                     <button onclick="changeUsername()" class="win-btn" style="font-size:9px; margin-left:10px; padding: 2px 5px;">[ CHANGE NAME ]</button>
                   </div>
                   <div class="panel-body" style="padding:0;display:flex;flex-direction:column;height:68vh;">
@@ -163,7 +173,7 @@ permalink: /index.html
             </div>
 
             <!-- SHOP -->
-           <div id="tab-shop" class="tab-panel">
+            <div id="tab-shop" class="tab-panel">
               <div class="panel">
                 <div class="panel-header">&#9670; Shop</div>
                 <div class="panel-body" style="display:flex; flex-direction:column; align-items:center; padding:32px 16px; text-align:center;">
@@ -246,19 +256,22 @@ permalink: /index.html
     {# ═══════════════════════════════════════════════════════════════════
        ELEVENTY INJECTS GAME DATA HERE AT BUILD TIME
        Edit _data/htmlGames.json, ruffleGames.json, or webPorts.json to add games!
+       Drop jsdelivrUrls.json and githackUrls.json in _data/ too.
        ═══════════════════════════════════════════════════════════════════ #}
     <script>
-      window.__BASE_URLS__ = {{ baseUrls | dump | safe }};
+      window.__BASE_URLS__     = {{ statically | dump | safe }};
+      window.__JSDELIVR_URLS__ = {{ jsdelivr | dump | safe }};
+      window.__GITHACK_URLS__  = {{ githack | dump | safe }};
       window.__CREDITS_MAPPING__ = {{ creditsMapping | dump | safe }};
       window.__GAMES_DATA__ = [
         {% for g in htmlGames %}
-          { "name": {{ g.name | dump | safe }}, "slug": {{ g.slug | dump | safe }}, "path": {{ g.path | dump | safe }}, "thumbnail": {{ g.thumbnail | dump | safe }}, "description": {{ g.description | dump | safe }}, "type": "html" },
+          { "name": {{ g.name | dump | safe }}, "slug": {{ g.slug | dump | safe }}, "path": {{ g.path | dump | safe }}, "thumbnail": {{ g.thumbnail | dump | safe }}, "description": {{ g.description | dump | safe }}, "type": "html"{% if g.cdn %}, "cdn": {{ g.cdn | dump | safe }}{% endif %} },
         {% endfor %}
         {% for g in ruffleGames %}
-          { "name": {{ g.name | dump | safe }}, "slug": {{ g.slug | dump | safe }}, "path": {{ g.path | dump | safe }}, "thumbnail": {{ g.thumbnail | dump | safe }}, "description": {{ g.description | dump | safe }}, "type": "ruffle" },
+          { "name": {{ g.name | dump | safe }}, "slug": {{ g.slug | dump | safe }}, "path": {{ g.path | dump | safe }}, "thumbnail": {{ g.thumbnail | dump | safe }}, "description": {{ g.description | dump | safe }}, "type": "ruffle"{% if g.cdn %}, "cdn": {{ g.cdn | dump | safe }}{% endif %} },
         {% endfor %}
         {% for g in webPorts %}
-          { "name": {{ g.name | dump | safe }}, "slug": {{ g.slug | dump | safe }}, "path": {{ g.path | dump | safe }}, "thumbnail": {{ g.thumbnail | dump | safe }}, "description": {{ g.description | dump | safe }}, "type": "webPorts" },
+          { "name": {{ g.name | dump | safe }}, "slug": {{ g.slug | dump | safe }}, "path": {{ g.path | dump | safe }}, "thumbnail": {{ g.thumbnail | dump | safe }}, "description": {{ g.description | dump | safe }}, "type": "webPorts"{% if g.cdn %}, "cdn": {{ g.cdn | dump | safe }}{% endif %} },
         {% endfor %}
       ];
     </script>
@@ -272,6 +285,10 @@ permalink: /index.html
             if (e && e.target) e.target.classList.add('active');
             if (name === 'chat') window.openChatTab?.();
             if (name === 'games') window.onGamesTabVisible?.();
+        }
+
+        function closeCreditsModal() {
+            document.getElementById('game-credits-modal').style.display = 'none';
         }
     </script>
 
@@ -287,7 +304,6 @@ permalink: /index.html
       const app = initializeApp(firebaseConfig);
       const db  = getFirestore(app);
 
-      // Stable device ID so the user can delete their own messages
       let uid = localStorage.getItem('wl_uid');
       if (!uid) { uid = crypto.randomUUID(); localStorage.setItem('wl_uid', uid); }
 

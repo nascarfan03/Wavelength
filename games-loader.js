@@ -2,11 +2,8 @@
  * games-loader.js
  * Universal Fetch-and-Inject Game Loader for Wavelength UI.
  *
- * Logic:
- * - HTML/Ruffle: Fetches from @master branch via Statically
- * - Web Ports:   Fetches from @main branch via Statically
- * - Injection:   Uses document.write + <base> tag so relative assets
- *                resolve correctly from the CDN.
+ * CDN switching: Statically (default) | jsDelivr | GitHack
+ * Each CDN has its own base URL set injected via window.__*_URLS__ globals.
  */
 
 (function () {
@@ -19,7 +16,15 @@
     webPorts: "web port"
   };
 
-  let baseUrls = {};
+  // CDN definitions — labels and which global holds their base URLs
+  const CDNS = [
+    { key: "statically", label: "Statically", urlsGlobal: "__BASE_URLS__"     },
+    { key: "jsdelivr",   label: "jsDelivr",   urlsGlobal: "__JSDELIVR_URLS__"  },
+    { key: "githack",    label: "GitHack",     urlsGlobal: "__GITHACK_URLS__"   },
+  ];
+
+  let currentCdn = "statically";
+
   let allGames = [];
   let filteredGames = [];
   let loadedCount = 0;
@@ -44,9 +49,9 @@
       return;
     }
 
-    baseUrls = window.__BASE_URLS__;
     allGames = window.__GAMES_DATA__;
 
+    buildCdnSwitcher();
     applyFilters();
 
     searchEl?.addEventListener("input", debounce(applyFilters, 200));
@@ -73,6 +78,68 @@
       observer.observe(sentinel);
     };
   }
+
+  // ---------------------------------------------------------------------------
+  // CDN SWITCHER
+  // ---------------------------------------------------------------------------
+
+  function buildCdnSwitcher() {
+    const container = document.getElementById("cdn-switcher");
+    if (!container) return;
+
+    CDNS.forEach(cdn => {
+      const btn = document.createElement("button");
+      btn.className = "cdn-btn" + (cdn.key === currentCdn ? " active" : "");
+      btn.textContent = cdn.label;
+      btn.title = "Load games via " + cdn.label;
+      btn.addEventListener("click", () => switchCdn(cdn.key));
+      container.appendChild(btn);
+    });
+  }
+
+  function switchCdn(cdnKey) {
+    if (cdnKey === currentCdn) return;
+    currentCdn = cdnKey;
+
+    // Update button states
+    document.querySelectorAll(".cdn-btn").forEach(btn => {
+      btn.classList.toggle("active", btn.textContent === CDNS.find(c => c.key === cdnKey).label);
+    });
+
+    // If a game is currently playing, reload it from the new CDN
+    const game = window.__CURRENT_GAME__;
+    if (game) {
+      playGame(game.slug, game.type);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // URL helpers
+  // ---------------------------------------------------------------------------
+
+  function getBaseUrls() {
+    const cdn = CDNS.find(c => c.key === currentCdn);
+    return window[cdn.urlsGlobal] || window.__BASE_URLS__;
+  }
+
+  function joinUrl(base, path) {
+    return base.replace(/\/?$/, "/") + String(path).replace(/^\//, "");
+  }
+
+  function dirUrl(url) {
+    return url.substring(0, url.lastIndexOf("/") + 1);
+  }
+
+  function buildGameUrl(game) {
+    const baseUrls = getBaseUrls();
+    const cdnKey   = game.cdn || game.type;
+    const baseUrl  = baseUrls[cdnKey] || "";
+    return joinUrl(baseUrl, game.path);
+  }
+
+  // ---------------------------------------------------------------------------
+  // FILTERS / RENDERING
+  // ---------------------------------------------------------------------------
 
   function applyFilters() {
     const query     = (searchEl?.value || "").trim().toLowerCase();
@@ -161,35 +228,6 @@
   }
 
   // ---------------------------------------------------------------------------
-  // URL helpers
-  // ---------------------------------------------------------------------------
-
-  /**
-   * Safely joins a CDN base URL and a game path with exactly one slash
-   * between them, regardless of whether either side has a trailing/leading slash.
-   *
-   * joinUrl("https://cdn.statically.io/gh/ajtabjs/wl-main@master/", "games/foo/index.html")
-   *   → "https://cdn.statically.io/gh/ajtabjs/wl-main@master/games/foo/index.html"
-   *
-   * joinUrl("https://cdn.statically.io/gh/ajtabjs/wl-main@master/", "/games/foo/index.html")
-   *   → "https://cdn.statically.io/gh/ajtabjs/wl-main@master/games/foo/index.html"
-   */
-  function joinUrl(base, path) {
-    return base.replace(/\/?$/, "/") + String(path).replace(/^\//, "");
-  }
-
-  /**
-   * Returns the directory portion of a URL (everything up to and including
-   * the last "/"), used to set the <base href> for relative asset resolution.
-   *
-   * dirUrl("https://cdn.../games/foo/index.html")
-   *   → "https://cdn.../games/foo/"
-   */
-  function dirUrl(url) {
-    return url.substring(0, url.lastIndexOf("/") + 1);
-  }
-
-  // ---------------------------------------------------------------------------
   // PLAY GAME
   // ---------------------------------------------------------------------------
 
@@ -197,19 +235,9 @@
     const game = allGames.find(g => g.slug === slug && g.type === type);
     if (!game) return;
 
-    // Pick CDN key: game.cdn if set, otherwise game.type.
-    // Maps to keys in baseUrls.json:
-    //   "html"     → @master branch
-    //   "ruffle"   → @master branch  (self-contained HTML; SWF loads from jsDelivr)
-    //   "webPorts" → @main branch
-    const cdnKey  = game.cdn || game.type;
-    const baseUrl = baseUrls[cdnKey] || "";
+    const gameUrl = buildGameUrl(game);
 
-    // joinUrl prevents double-slashes when game.path starts with "/"
-    const gameUrl = joinUrl(baseUrl, game.path);
-
-    console.log(`[games-loader] type=${type} cdnKey=${cdnKey}`);
-    console.log(`[games-loader] baseUrl → ${baseUrl}`);
+    console.log(`[games-loader] cdn=${currentCdn} type=${type} cdnKey=${game.cdn || game.type}`);
     console.log(`[games-loader] gameUrl → ${gameUrl}`);
 
     window.__CURRENT_GAME__     = game;
@@ -221,14 +249,18 @@
     const iframe = document.getElementById("game-iframe");
     iframe.style.display = "block";
 
+    // Update CDN indicator in play view
+    const cdnIndicator = document.getElementById("cdn-indicator");
+    if (cdnIndicator) {
+      cdnIndicator.textContent = CDNS.find(c => c.key === currentCdn)?.label || currentCdn;
+    }
+
     try {
       const response = await fetch(gameUrl + "?t=" + Date.now());
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const html = await response.text();
+      const html    = await response.text();
+      const baseDir = dirUrl(gameUrl);
 
-      // <base href> points to the game's folder so all relative paths
-      // (assets, scripts, SWF absolute URLs via jsDelivr) resolve correctly.
-      const baseDir   = dirUrl(gameUrl);
       const iframeDoc = iframe.contentWindow.document;
       iframeDoc.open();
       iframeDoc.write(`<base href="${escHtml(baseDir)}">${html}`);
@@ -259,7 +291,7 @@
       iframeDoc.open();
       iframeDoc.write("");
       iframeDoc.close();
-    } catch (e) { /* cross-origin guard */ }
+    } catch (e) {}
 
     iframe.src = "";
 
@@ -313,12 +345,11 @@
       win.document.body.appendChild(iframeFb);
     }
 
-    // Clear the local iframe
     const localIframe = document.getElementById("game-iframe");
     try {
       const localDoc = localIframe.contentWindow.document;
       localDoc.open(); localDoc.write(""); localDoc.close();
-    } catch (e) { /* cross-origin guard */ }
+    } catch (e) {}
 
     localIframe.src           = "";
     localIframe.style.display = "none";

@@ -48,7 +48,7 @@ def main():
     dry_run = "--dry-run" in sys.argv
     
     data_dir = Path(__file__).parent.parent / "_data"
-    base_urls_path = data_dir / "baseUrls.json"
+    base_urls_path = data_dir / "githack.json"
     
     if not base_urls_path.exists():
         print(f"Error: {base_urls_path} not found")
