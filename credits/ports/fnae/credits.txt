@@ -1,4 +1,4 @@
-Game: Five Nighs at Epstein's
+Game: Five Nights at Epstein's
 Source: https://github.com/web-ports/fnae
 
 Ported by: bread
