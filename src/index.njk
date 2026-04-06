@@ -108,26 +108,20 @@ permalink: /index.html
               <div id="games-play-view" style="display:none;">
                 <button class="back-btn win-btn" onclick="closeGame()">back</button>
                 <div class="play-view-inner">
-
-                  <!-- CDN switcher sidebar -->
-                  <div class="cdn-switcher-panel">
-                    <div class="cdn-switcher-label">CDN</div>
-                    <div id="cdn-switcher"></div>
-                    <div class="cdn-indicator-label">Active:</div>
-                    <div id="cdn-indicator" class="cdn-indicator">Statically</div>
-                  </div>
-
-                  <!-- iframe -->
                   <div class="iframe-container">
                     <iframe id="game-iframe" class="gameframe" allowfullscreen
                       sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock allow-top-navigation"></iframe>
                   </div>
-
                 </div>
                 <div class="iframe-buttons">
                   <button class="win-btn" onclick="toggleFullscreen()">fullscreen</button>
                   <button class="win-btn" onclick="openCloaked()">open in new tab (cloaked)</button>
                   <button class="win-btn" onclick="credits()">game credits</button>
+                </div>
+                <div class="cdn-switcher-row">
+                  <span class="cdn-switcher-row-label">CDN:</span>
+                  <div id="cdn-switcher"></div>
+                  <span class="cdn-indicator-wrap">active: <span id="cdn-indicator">Statically</span></span>
                 </div>
               </div>
 

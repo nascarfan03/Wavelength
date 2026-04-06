@@ -313,6 +313,9 @@ body {
     border-color: #fff #808080 #808080 #fff;
     background: #c0c0c0;
     cursor: pointer; padding: 2px 8px; white-space: nowrap;
+    -webkit-text-stroke: 0;
+    paint-order: fill;
+    color: #000;
 }
 .win-btn:active { border-color: #808080 #fff #fff #808080; }
 
@@ -337,6 +340,9 @@ body {
     background: #c0c0c0;
     cursor: pointer;
     padding: 3px 10px;
+    -webkit-text-stroke: 0;
+    paint-order: fill;
+    color: #000;
 }
 
 .games-filter-btn:active,
@@ -442,8 +448,8 @@ body {
     border: 1px solid;
 }
 
-.game-card-type--html { border-color: #008000; color: #005000; background: #e0ffe0; }
-.game-card-type--ruffle { border-color: #808000; color: #504000; background: #ffffc0; }
+.game-card-type--html     { border-color: #008000; color: #005000; background: #e0ffe0; }
+.game-card-type--ruffle   { border-color: #808000; color: #504000; background: #ffffc0; }
 .game-card-type--webPorts { border-color: #000080; color: #000050; background: #e0e0ff; }
 
 .games-sentinel {
@@ -464,7 +470,118 @@ body {
     padding: 20px;
 }
 
-/* Play View */
+/* ── PLAY VIEW ───────────────────────────────────────── */
+#games-play-view {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.back-btn {
+    align-self: flex-start;
+}
+
+.play-view-inner {
+    display: flex;
+    gap: 0;
+    border: 2px solid;
+    border-color: #808080 #fff #fff #808080;
+}
+
+/* Iframe container */
+.iframe-container {
+    flex: 1;
+    height: 68vh;
+    background: #000;
+    position: relative;
+    overflow: hidden;
+}
+
+.gameframe {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border: none;
+}
+
+/* ── IFRAME BUTTONS (fullscreen, cloaked, credits) ── */
+.iframe-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    padding: 6px 0 2px;
+    flex-wrap: wrap;
+}
+
+/* ── CDN SWITCHER ────────────────────────────────────── */
+.cdn-switcher-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 4px 0 2px;
+    flex-wrap: wrap;
+}
+
+.cdn-switcher-row-label {
+    font-size: 9px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    color: #444;
+    text-transform: uppercase;
+    -webkit-text-stroke: 0;
+    paint-order: fill;
+}
+
+#cdn-switcher {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.cdn-btn {
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: bold;
+    border: 2px solid;
+    border-color: #fff #808080 #808080 #fff;
+    background: #c0c0c0;
+    cursor: pointer;
+    padding: 2px 10px;
+    letter-spacing: 0.5px;
+    -webkit-text-stroke: 0;
+    paint-order: fill;
+    color: #000;
+}
+
+.cdn-btn:hover:not(.active) {
+    background: #d4d4d4;
+}
+
+.cdn-btn:active {
+    border-color: #808080 #fff #fff #808080;
+}
+
+.cdn-btn.active {
+    border-color: #808080 #fff #fff #808080;
+    background: #000080;
+    color: #fff;
+}
+
+.cdn-indicator-wrap {
+    font-size: 9px;
+    color: #555;
+    -webkit-text-stroke: 0;
+    paint-order: fill;
+}
+
+#cdn-indicator {
+    font-weight: bold;
+    color: #000080;
+}
+
+/* Play header stuff (kept for compat) */
 .play-header {
     display: flex;
     align-items: center;
@@ -484,48 +601,7 @@ body {
     letter-spacing: 0.8px;
 }
 
-.play-type-badge {
-    font-size: 9px;
-    padding: 2px 6px;
-    border: 1px solid;
-}
-
-.play-type-badge--html { border-color: #008000; color: #005000; background: #e0ffe0; }
-.play-type-badge--ruffle { border-color: #808000; color: #504000; background: #ffffc0; }
+.play-type-badge { font-size: 9px; padding: 2px 6px; border: 1px solid; }
+.play-type-badge--html     { border-color: #008000; color: #005000; background: #e0ffe0; }
+.play-type-badge--ruffle   { border-color: #808000; color: #504000; background: #ffffc0; }
 .play-type-badge--webPorts { border-color: #000080; color: #000050; background: #e0e0ff; }
-
-/* Play view */
-#games-play-view {
-    position: relative;
-}
-
-.back-btn {
-    position: absolute;
-    top: 8px;
-    left: 8px;
-    z-index: 100;
-}
-
-/* Iframe container */
-.iframe-container {
-    width: 100%;
-    height: 68vh;
-    border: 2px solid;
-    border-color: #fff #808080 #808080 #fff;
-    background: #c0c0c0;
-    position: relative;
-}
-
-.gameframe {
-    width: 100%;
-    height: 100%;
-    display: block;
-    border: none;
-}
-
-.iframe-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 6px;
-    padding: 8px 0;
-}
