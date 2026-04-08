@@ -559,10 +559,6 @@ body {
     background: #d4d4d4;
 }
 
-.cdn-btn:active {
-    border-color: #808080 #fff #fff #808080;
-}
-
 .cdn-btn.active {
     border-color: #808080 #fff #fff #808080;
     background: #000080;
