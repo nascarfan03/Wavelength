@@ -669,3 +669,15 @@ body {
 .shop-logo-wrap a:hover .shop-logo-label {
     text-decoration: underline;
 }
+
+.win-btn {
+    font-family: inherit; font-size: 11px; font-weight: bold;
+    border: 2px solid;
+    border-color: #fff #808080 #808080 #fff;
+    background: #c0c0c0;
+    cursor: pointer; padding: 2px 8px; white-space: nowrap;
+    -webkit-text-stroke: 0;
+    paint-order: fill;
+    color: #000;
+}
+.win-btn:active { border-color: #808080 #fff #fff #808080; }
