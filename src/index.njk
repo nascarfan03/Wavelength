@@ -30,6 +30,7 @@ permalink: /index.html
             <button class="tab active" onclick="switchTab('home', event)">[ home ]</button>
             <button class="tab" onclick="switchTab('games', event)">[ games ]</button>
             <button class="tab" onclick="switchTab('chat', event)">[ chat ]</button>
+          <button class="tab" onclick="switchTab('users', event)">[ users ]</button>
             <button class="tab" onclick="switchTab('shop', event)">[ shop ]</button>
             <button class="tab" onclick="switchTab('credits', event)">[ credits ]</button>
         </nav>
@@ -175,6 +176,8 @@ permalink: /index.html
                 <div class="panel">
                   <div class="panel-header">
                     &#9670; Chat &nbsp;<span id="chat-user-label" style="font-weight:normal;font-size:10px;opacity:0.85;"></span>
+                    <span id="chat-link-status" style="font-weight:normal;font-size:10px;opacity:0.85;margin-left:8px;"></span>
+                    <button id="chat-link-btn" onclick="linkChatToAccount()" class="win-btn" style="display:none;font-size:9px; margin-left:10px; padding: 2px 5px;">[ LINK ACCOUNT ]</button>
                     <button onclick="changeUsername()" class="win-btn" style="font-size:9px; margin-left:10px; padding: 2px 5px;">[ CHANGE NAME ]</button>
                   </div>
                   <div class="panel-body" style="padding:0;display:flex;flex-direction:column;height:68vh;">
@@ -189,6 +192,48 @@ permalink: /index.html
                 </div>
               </div>
 
+            </div>
+
+            <!-- USERS -->
+            <div id="tab-users" class="tab-panel">
+              <div class="users-layout">
+                <div class="panel">
+                  <div class="panel-header">&#9670; Account</div>
+                  <div class="panel-body users-auth-body">
+                    <div id="users-auth-status" class="users-auth-status">Not logged in.</div>
+
+                    <div id="users-auth-message" class="users-auth-message"></div>
+
+                    <div id="users-auth-forms">
+                      <div class="users-auth-group">
+                        <label for="users-register-name">Username</label>
+                        <input id="users-register-name" class="chat-input-field" type="text" maxlength="24" placeholder="your_name_here...">
+                      </div>
+                      <div class="users-auth-group">
+                        <label for="users-register-password">Password</label>
+                        <input id="users-register-password" class="chat-input-field" type="password" maxlength="72" placeholder="at least 6 characters">
+                      </div>
+                      <div class="users-auth-actions">
+                        <button class="win-btn" onclick="registerUser()">[ REGISTER ]</button>
+                        <button class="win-btn" onclick="loginUser()">[ LOGIN ]</button>
+                      </div>
+                    </div>
+
+                    <div id="users-auth-logged-in" style="display:none;">
+                      <div class="users-auth-hello" id="users-auth-hello"></div>
+                      <button class="win-btn" onclick="logoutUser()">[ LOG OUT ]</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="panel">
+                  <div class="panel-header">&#9670; Registered Users</div>
+                  <div class="panel-body">
+                    <div id="users-list-status" class="users-list-status">Loading users...</div>
+                    <div id="users-list" class="users-list"></div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <!-- SHOP -->
@@ -299,7 +344,8 @@ permalink: /index.html
     <script src="games-loader.js"></script>
     <script>
         // chat tab requested before firebase module was ready
-        let _chatTabPending = false;
+      window._chatTabPending = false;
+      window._usersTabPending = false;
 
         function switchTab(name, e) {
             document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
@@ -311,8 +357,15 @@ permalink: /index.html
                     window.openChatTab();
                 } else {
                     // Module not ready yet — flag it so the module calls it when ready
-                    _chatTabPending = true;
+                window._chatTabPending = true;
                 }
+            }
+            if (name === 'users') {
+              if (window.openUsersTab) {
+                window.openUsersTab();
+              } else {
+                window._usersTabPending = true;
+              }
             }
             if (name === 'games') window.onGamesTabVisible?.();
         }
@@ -326,6 +379,9 @@ permalink: /index.html
     <script type="module">
       import { initializeApp }
         from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+      import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+               signOut, onAuthStateChanged }
+        from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
       import { getFirestore, collection, addDoc, onSnapshot,
                query, orderBy, limit, deleteDoc, doc, 
                serverTimestamp, getDoc, setDoc }
@@ -333,6 +389,7 @@ permalink: /index.html
       import { firebaseConfig } from './firebase-config.js';
 
       const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
       const db  = getFirestore(app);
 
       let uid = localStorage.getItem('wl_uid');
@@ -340,6 +397,228 @@ permalink: /index.html
 
       let currentUser = null;
       let chatStarted = false;
+      let currentAccount = null;
+      let usersListStarted = false;
+
+      function setUsersMessage(text, isError = false) {
+        const el = document.getElementById('users-auth-message');
+        el.textContent = text || '';
+        el.classList.toggle('users-auth-message-error', isError);
+      }
+
+      function setUsersAuthUI(isLoggedIn) {
+        document.getElementById('users-auth-forms').style.display = isLoggedIn ? 'none' : 'block';
+        document.getElementById('users-auth-logged-in').style.display = isLoggedIn ? 'block' : 'none';
+      }
+
+      function authEmailForUsername(username) {
+        const normalized = String(username || '').trim().toLowerCase();
+        const hex = Array.from(normalized)
+          .map(ch => ch.codePointAt(0).toString(16).padStart(4, '0'))
+          .join('');
+        return `u${hex}@users.wavelength.local`;
+      }
+
+      async function updateChatLinkUI() {
+        const linkStatus = document.getElementById('chat-link-status');
+        const linkBtn = document.getElementById('chat-link-btn');
+        if (!linkStatus || !linkBtn) return;
+
+        if (!currentUser) {
+          linkStatus.textContent = '';
+          linkBtn.style.display = 'inline-block';
+          return;
+        }
+
+        if (!currentAccount) {
+          linkStatus.textContent = '[ not linked ]';
+          linkBtn.style.display = 'inline-block';
+          return;
+        }
+
+        try {
+          const nameRef = doc(db, 'usernames', currentUser.toLowerCase());
+          const snap = await getDoc(nameRef);
+          const linkedUid = snap.exists() ? snap.data().authUid : null;
+          const isLinked = linkedUid === currentAccount.uid;
+
+          if (isLinked) {
+            linkStatus.textContent = '[ linked to account ]';
+            linkBtn.style.display = 'inline-block';
+          } else {
+            linkStatus.textContent = '[ not linked ]';
+            linkBtn.style.display = 'inline-block';
+          }
+        } catch {
+          linkStatus.textContent = '[ link status unavailable ]';
+          linkBtn.style.display = 'inline-block';
+        }
+      }
+
+      function renderUsersList(docs) {
+        const list = document.getElementById('users-list');
+        const status = document.getElementById('users-list-status');
+
+        if (!docs.length) {
+          list.innerHTML = '';
+          status.textContent = 'No registered users yet.';
+          return;
+        }
+
+        status.textContent = `${docs.length} registered user${docs.length === 1 ? '' : 's'}`;
+        list.innerHTML = docs.map((d, i) => {
+          const data = d.data();
+          const name = esc(data.username || 'unknown');
+          return `<div class="users-list-item"><span class="users-list-rank">${i + 1}.</span> <span class="users-list-name">${name}</span></div>`;
+        }).join('');
+      }
+
+      function startUsersListListener() {
+        if (usersListStarted) return;
+        usersListStarted = true;
+
+        const q = query(collection(db, 'accounts'), orderBy('createdAt', 'desc'), limit(200));
+        onSnapshot(q, snap => {
+          const docs = [];
+          snap.forEach(d => docs.push(d));
+          renderUsersList(docs);
+        }, () => {
+          document.getElementById('users-list-status').textContent = 'Could not load users list.';
+        });
+      }
+
+      window.openUsersTab = function () {
+        startUsersListListener();
+        if (!currentAccount) {
+          setTimeout(() => document.getElementById('users-register-name')?.focus(), 50);
+        }
+      };
+
+      window.registerUser = async function () {
+        const username = document.getElementById('users-register-name').value.trim();
+        const password = document.getElementById('users-register-password').value;
+        const authEmail = authEmailForUsername(username);
+
+        if (!username || username.length < 2) {
+          setUsersMessage('Username must be at least 2 characters.', true);
+          return;
+        }
+        if (!password || password.length < 6) {
+          setUsersMessage('Password must be at least 6 characters.', true);
+          return;
+        }
+
+        try {
+          const cred = await createUserWithEmailAndPassword(auth, authEmail, password);
+          await setDoc(doc(db, 'accounts', cred.user.uid), {
+            uid: cred.user.uid,
+            username,
+            createdAt: serverTimestamp()
+          }, { merge: true });
+          setUsersMessage('Account created. You are now logged in.');
+          await updateChatLinkUI();
+        } catch (err) {
+          setUsersMessage(err?.message || 'Registration failed.', true);
+        }
+      };
+
+      window.loginUser = async function () {
+        const username = document.getElementById('users-register-name').value.trim();
+        const password = document.getElementById('users-register-password').value;
+        const authEmail = authEmailForUsername(username);
+
+        if (!username || !password) {
+          setUsersMessage('Enter your username and password to log in.', true);
+          return;
+        }
+
+        try {
+          await signInWithEmailAndPassword(auth, authEmail, password);
+          setUsersMessage('Logged in successfully.');
+          await updateChatLinkUI();
+        } catch (err) {
+          setUsersMessage(err?.message || 'Login failed.', true);
+        }
+      };
+
+      window.logoutUser = async function () {
+        try {
+          await signOut(auth);
+          setUsersMessage('Logged out.');
+          await updateChatLinkUI();
+        } catch (err) {
+          setUsersMessage(err?.message || 'Logout failed.', true);
+        }
+      };
+
+      window.linkChatToAccount = async function () {
+        if (!currentUser) {
+          setUsersMessage('Pick a chat username first.', true);
+          return;
+        }
+        if (!currentAccount) {
+          const shouldCreate = window.confirm('You do not have a linked account yet. Create or log in to an account now?');
+          if (shouldCreate) {
+            switchTab('users');
+            const usernameInput = document.getElementById('users-register-name');
+            if (usernameInput && !usernameInput.value.trim()) {
+              usernameInput.value = currentUser;
+            }
+            setUsersMessage('Create or log in to an account, then press [ LINK ACCOUNT ] again from chat.');
+            setTimeout(() => document.getElementById('users-register-password')?.focus(), 50);
+          } else {
+            setUsersMessage('Log in from the users tab, then link your chat username.', true);
+          }
+          return;
+        }
+
+        try {
+          const nameRef = doc(db, 'usernames', currentUser.toLowerCase());
+          const snap = await getDoc(nameRef);
+          if (!snap.exists()) {
+            setUsersMessage('Chat username record not found.', true);
+            return;
+          }
+
+          const data = snap.data();
+          if (data.uid !== uid) {
+            setUsersMessage('You can only link your own active chat username.', true);
+            return;
+          }
+
+          await setDoc(nameRef, { authUid: currentAccount.uid }, { merge: true });
+          setUsersMessage(`Linked chat username ${currentUser} to your account.`);
+          await updateChatLinkUI();
+        } catch (err) {
+          setUsersMessage(err?.message || 'Could not link chat username.', true);
+        }
+      };
+
+      onAuthStateChanged(auth, async user => {
+        currentAccount = user || null;
+        const statusEl = document.getElementById('users-auth-status');
+        const helloEl = document.getElementById('users-auth-hello');
+
+        if (!statusEl || !helloEl) return;
+
+        if (!user) {
+          statusEl.textContent = 'Not logged in.';
+          helloEl.textContent = '';
+          setUsersAuthUI(false);
+          await updateChatLinkUI();
+          return;
+        }
+
+        const accountRef = doc(db, 'accounts', user.uid);
+        const snap = await getDoc(accountRef);
+        const data = snap.exists() ? snap.data() : {};
+        const username = data.username || user.email || 'user';
+
+        statusEl.textContent = `Logged in as ${username}`;
+        helloEl.textContent = `Welcome back, ${username}.`;
+        setUsersAuthUI(true);
+        await updateChatLinkUI();
+      });
 
       window.openChatTab = async function () {
         const saved = localStorage.getItem('wl_username');
@@ -347,8 +626,11 @@ permalink: /index.html
           const nameRef = doc(db, 'usernames', saved.toLowerCase());
           const snap = await getDoc(nameRef);
           // If the name exists and belongs to us, or doesn't exist yet, re-claim it
-          if (!snap.exists() || snap.data().uid === uid) {
-            await setDoc(nameRef, { uid, name: saved });
+          const canClaimByLink = snap.exists() && currentAccount && snap.data().authUid === currentAccount.uid;
+          if (!snap.exists() || snap.data().uid === uid || canClaimByLink) {
+            const payload = { uid, name: saved };
+            if (currentAccount) payload.authUid = currentAccount.uid;
+            await setDoc(nameRef, payload, { merge: true });
             currentUser = saved;
             showChatUI();
             return;
@@ -369,12 +651,15 @@ permalink: /index.html
         const nameRef = doc(db, 'usernames', name.toLowerCase());
         const snap = await getDoc(nameRef);
 
-        if (snap.exists() && snap.data().uid !== uid) {
+        const canClaimByLink = snap.exists() && currentAccount && snap.data().authUid === currentAccount.uid;
+        if (snap.exists() && snap.data().uid !== uid && !canClaimByLink) {
           errorEl.textContent = '✕ that name is taken, choose another.';
           return;
         }
 
-        await setDoc(nameRef, { uid, name });
+        const payload = { uid, name };
+        if (currentAccount) payload.authUid = currentAccount.uid;
+        await setDoc(nameRef, payload, { merge: true });
         currentUser = name;
         localStorage.setItem('wl_username', name);
         document.getElementById('username-modal').style.display = 'none';
@@ -385,6 +670,7 @@ permalink: /index.html
       function showChatUI () {
         document.getElementById('chat-ui').style.display = 'block';
         document.getElementById('chat-user-label').textContent = '[ logged in as: ' + currentUser + ' ]';
+        updateChatLinkUI();
         if (!chatStarted) { startListener(); chatStarted = true; }
       }
 
@@ -499,6 +785,8 @@ permalink: /index.html
         currentUser = null;
         localStorage.removeItem('wl_username');
         document.getElementById('chat-ui').style.display = 'none';
+        document.getElementById('chat-link-status').textContent = '';
+        document.getElementById('chat-link-btn').style.display = 'none';
         document.getElementById('username-input').value = '';
         document.getElementById('username-error').textContent = '';
         document.getElementById('username-modal').style.display = 'flex';
@@ -508,6 +796,10 @@ permalink: /index.html
       if (window._chatTabPending) {
         window._chatTabPending = false;
         window.openChatTab();
+      }
+      if (window._usersTabPending) {
+        window._usersTabPending = false;
+        window.openUsersTab();
       }
     </script>
 

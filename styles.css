@@ -307,6 +307,103 @@ body {
     padding: 2px 5px;
 }
 
+/* ── USERS ────────────────────────────────────────── */
+.users-layout {
+    display: grid;
+    grid-template-columns: minmax(260px, 360px) 1fr;
+    gap: 8px;
+}
+
+.users-auth-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.users-auth-status {
+    font-size: 11px;
+    color: #000080;
+    font-weight: bold;
+}
+
+.users-auth-message {
+    min-height: 14px;
+    font-size: 10px;
+    color: #005000;
+}
+
+.users-auth-message-error {
+    color: #800000;
+}
+
+.users-auth-group {
+    margin-bottom: 6px;
+}
+
+.users-auth-group label {
+    display: block;
+    margin-bottom: 2px;
+    font-size: 10px;
+    font-weight: bold;
+    color: #444;
+}
+
+.users-auth-actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.users-auth-hello {
+    font-size: 11px;
+    margin-bottom: 8px;
+}
+
+.users-list-status {
+    font-size: 11px;
+    color: #444;
+    margin-bottom: 6px;
+}
+
+.users-list {
+    max-height: 58vh;
+    overflow-y: auto;
+    border: 2px solid;
+    border-color: #808080 #fff #fff #808080;
+    background: #fff;
+    padding: 6px 8px;
+}
+
+.users-list-item {
+    font-size: 11px;
+    padding: 3px 0;
+    border-bottom: 1px dotted #ddd;
+    line-height: 1.5;
+}
+
+.users-list-rank {
+    color: #808080;
+    margin-right: 3px;
+}
+
+.users-list-name {
+    color: #000080;
+    font-weight: bold;
+}
+
+.users-list-email {
+    color: #444;
+}
+
+@media (max-width: 760px) {
+    .users-layout {
+        grid-template-columns: 1fr;
+    }
+    .users-list {
+        max-height: 40vh;
+    }
+}
+
 
 
 
