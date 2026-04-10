@@ -304,7 +304,8 @@ permalink: /index.html
 
       const app = initializeApp(firebaseConfig);
       const db  = getFirestore(app);
-
+      window.__db = db;
+      
       let uid = localStorage.getItem('wl_uid');
       if (!uid) { uid = crypto.randomUUID(); localStorage.setItem('wl_uid', uid); }
 
