@@ -422,13 +422,13 @@ permalink: /index.html
 
         if (!currentUser) {
           linkStatus.textContent = '';
-          linkBtn.style.display = 'none';
+          linkBtn.style.display = 'inline-block';
           return;
         }
 
         if (!currentAccount) {
           linkStatus.textContent = '[ not linked ]';
-          linkBtn.style.display = 'none';
+          linkBtn.style.display = 'inline-block';
           return;
         }
 
@@ -440,14 +440,14 @@ permalink: /index.html
 
           if (isLinked) {
             linkStatus.textContent = '[ linked to account ]';
-            linkBtn.style.display = 'none';
+            linkBtn.style.display = 'inline-block';
           } else {
             linkStatus.textContent = '[ not linked ]';
             linkBtn.style.display = 'inline-block';
           }
         } catch {
           linkStatus.textContent = '[ link status unavailable ]';
-          linkBtn.style.display = 'none';
+          linkBtn.style.display = 'inline-block';
         }
       }
 
