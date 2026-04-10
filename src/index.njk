@@ -348,7 +348,7 @@ permalink: /index.html
       }
 
       function startListener () {
-        const q = query(collection(db, 'messages'), orderBy('time', 'asc'), limit(100));
+        const q = query(collection(db, 'messages'), orderBy('time', 'desc'), limit(100));
         onSnapshot(q, snap => {
           const box = document.getElementById('chat-messages');
           box.innerHTML = '';
