@@ -433,5 +433,12 @@
     "path": "raldi/index.html",
     "thumbnail": "gn/png/raldis-crackhouse.png",
     "description": ""
+  },
+  {
+    "name": "Stardew Valley",
+    "slug": "stardew",
+    "path": "stardew/index.html",
+    "thumbnail": "webp/stardew.webp",
+    "description": ""
   }
 ]
