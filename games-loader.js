@@ -283,19 +283,20 @@
   // CLOSE GAME
   // ---------------------------------------------------------------------------
 
+  function clearIframe(iframe) {
+    // After a document.write inject the iframe is cross-origin, so touching
+    // its .document throws a DOMException. Setting src to about:blank is
+    // always safe and effectively resets the frame.
+    iframe.removeAttribute("src");
+    iframe.src = "about:blank";
+  }
+
   window.closeGame = function () {
     document.getElementById("games-play-view").style.display = "none";
     document.getElementById("games-list-view").style.display = "block";
 
     const iframe = document.getElementById("game-iframe");
-    try {
-      const iframeDoc = iframe.contentWindow.document;
-      iframeDoc.open();
-      iframeDoc.write("");
-      iframeDoc.close();
-    } catch (e) {}
-
-    iframe.src = "";
+    clearIframe(iframe);
 
     const messageEl = document.getElementById("cloaked-message");
     if (messageEl) messageEl.style.display = "none";
@@ -348,12 +349,7 @@
     }
 
     const localIframe = document.getElementById("game-iframe");
-    try {
-      const localDoc = localIframe.contentWindow.document;
-      localDoc.open(); localDoc.write(""); localDoc.close();
-    } catch (e) {}
-
-    localIframe.src           = "";
+    clearIframe(localIframe);
     localIframe.style.display = "none";
 
     let messageEl = document.getElementById("cloaked-message");
