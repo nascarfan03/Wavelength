@@ -52,6 +52,7 @@ permalink: /index.html
                               <a href="https://github.com/ki-krpto/Wavelength" target="_blank"> <img src="./assets/badges/github.png"></a>
                           </div>
                       </div>
+                      
                   </div>
                   <div class="panel">
                       <div class="panel-header">&#9670; Changelog</div>
@@ -103,6 +104,10 @@ permalink: /index.html
                       </div>
                   </div>
               </div>
+                  <div class="dmca-footer">
+              <button class="win-btn dmca-footer-btn" onclick="document.getElementById('dmca-modal').style.display='flex'">[ dmca ]</button>
+            </div>
+
             </div>
 
             <!-- GAMES -->
@@ -320,6 +325,24 @@ permalink: /index.html
           </div>
           <div style="margin-top:12px;text-align:center;">
             <button class="win-btn" onclick="closeCreditsModal()">[ CLOSE ]</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DMCA MODAL -->
+    <div id="dmca-modal" class="modal-overlay" style="display:none;">
+      <div class="modal-box">
+        <button class="modal-close-btn" onclick="document.getElementById('dmca-modal').style.display='none'" aria-label="Close dialog">x</button>
+        <div class="panel-header">DMCA</div>
+        <div class="panel-body" style="padding:12px;">
+          <div class="dmca-body">
+            <p>If you own or developed a game that is on Wavelength and believe that your work has been used without permission, please email ajsw@waifu.club or ping ms.isosceles in the <a href="https://discord.gg/Yav59M7Hfn" target="_blank">discord server</a>.</p>
+         
+            <p class="dmca-note">If you are going to send an email, please include proof of ownership. thanks!</p>
+         
+          <div style="margin-top:12px;text-align:center;">
+            <button class="win-btn" onclick="document.getElementById('dmca-modal').style.display='none'">[ close ]</button>
           </div>
         </div>
       </div>
