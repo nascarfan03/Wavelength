@@ -1429,20 +1429,36 @@ permalink: /index.html
       }
 
       // Load bad words list
-      let badWords = [];
+      let badWordMatchers = [];
+
+      function escapeRegex(text) {
+        return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      }
+
+      function buildBadWordMatcher(entry) {
+        const normalized = entry.normalize('NFKC').trim().toLowerCase();
+        if (!normalized) return null;
+
+        const tokens = normalized.split(/\s+/u).filter(Boolean);
+        if (!tokens.length) return null;
+
+        const phrasePattern = tokens.map(escapeRegex).join('[\\s\\p{P}\\p{S}_]*');
+        return new RegExp(`(?<![\\p{L}\\p{N}])${phrasePattern}(?![\\p{L}\\p{N}])`, 'giu');
+      }
+
       fetch('./assets/badwords.txt')
         .then(r => r.text())
         .then(t => {
-          badWords = t.split('\n').map(w => w.trim().toLowerCase()).filter(Boolean);
+          badWordMatchers = t
+            .split(/\r?\n/u)
+            .map(buildBadWordMatcher)
+            .filter(Boolean);
         });
 
       function filterText(text) {
-        let filtered = text;
-        for (const word of badWords) {
-          if (!word) continue;
-          const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-          const regex = new RegExp(`(?<![a-z])${escaped}(?![a-z])`, 'gi');
-          filtered = filtered.replace(regex, m => '*'.repeat(m.length));
+        let filtered = text.normalize('NFKC');
+        for (const regex of badWordMatchers) {
+          filtered = filtered.replace(regex, m => '*'.repeat(Array.from(m).length));
         }
         return filtered;
       }
