@@ -2,14 +2,14 @@
   "badges": [
     {
       "id": "moderator",
-      "label": "Moderator",
-      "title": "Moderator",
+      "label": "moderator",
+      "title": "community moderator",
       "image": "./assets/badges/users/mod.png"
     },
     {
       "id": "co-owner",
-      "label": "Co-Owner",
-      "title": "Co-Owner",
+      "label": "co-owner",
+      "title": "co-owner",
       "image": "./assets/icon-noborder.png"
     },
     {
