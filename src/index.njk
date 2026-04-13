@@ -472,6 +472,11 @@ permalink: /index.html
             document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.getElementById('tab-' + name).classList.add('active');
+            if (name !== 'profile') {
+              const url = new URL(window.location.href);
+              url.searchParams.delete('profile');
+              history.replaceState({}, '', url);
+            }
             if (e && e.target) {
               e.target.classList.add('active');
             } else {
@@ -868,6 +873,8 @@ permalink: /index.html
           if (snap.empty) {
             document.getElementById('profile-view').style.display = 'none';
             setProfileStatus('Profile not found.', true);
+            currentProfileUsername = '';
+            setProfileQuery('');
             return;
           }
 
@@ -879,6 +886,8 @@ permalink: /index.html
         } catch {
           document.getElementById('profile-view').style.display = 'none';
           setProfileStatus('Could not load profile.', true);
+          currentProfileUsername = '';
+          setProfileQuery('');
         }
       }
 
