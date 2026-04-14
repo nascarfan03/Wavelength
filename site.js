@@ -124,6 +124,117 @@ function normalizeSongUrl(songUrl) {
   return '';
 }
 
+const PROFILE_THEME_PRESETS = {
+  classic: {
+    accent: '#000080',
+    bgStart: '#f8f8f8',
+    bgEnd: '#e5e5e5',
+    text: '#000000',
+    textMuted: '#444444',
+    panelBg: '#ffffff'
+  },
+  ocean: {
+    accent: '#0b5394',
+    bgStart: '#e8f4ff',
+    bgEnd: '#cfe8ff',
+    text: '#0f172a',
+    textMuted: '#334155',
+    panelBg: '#ffffff'
+  },
+  sunset: {
+    accent: '#c2410c',
+    bgStart: '#fff1e6',
+    bgEnd: '#ffd8b3',
+    text: '#3f1d00',
+    textMuted: '#7c2d12',
+    panelBg: '#fffaf5'
+  },
+  matrix: {
+    accent: '#00a651',
+    bgStart: '#0f1a14',
+    bgEnd: '#0a120d',
+    text: '#b7f7cf',
+    textMuted: '#7bc89f',
+    panelBg: '#102218'
+  },
+  midnight: {
+    accent: '#4f46e5',
+    bgStart: '#0f172a',
+    bgEnd: '#111827',
+    text: '#e5e7eb',
+    textMuted: '#94a3b8',
+    panelBg: '#1f2937'
+  },
+  bliish: {
+    accent: '#6b21a8',
+    bgStart: '#f0ebfa',
+    bgEnd: '#ddd6fe',
+    text: '#1a1a1a',
+    textMuted: '#6b7280',
+    panelBg: '#fdfcff'
+  }
+};
+
+function normalizeThemePreset(value) {
+  const preset = String(value || '').trim().toLowerCase();
+  if (!preset || !PROFILE_THEME_PRESETS[preset]) return 'classic';
+  return preset;
+}
+
+function normalizeHexColor(value) {
+  const raw = String(value || '').trim();
+  if (/^#[0-9a-fA-F]{6}$/.test(raw)) return raw.toLowerCase();
+  return '';
+}
+
+function profileThemeFromData(data) {
+  const preset = normalizeThemePreset(data.profileThemePreset || 'classic');
+  const base = PROFILE_THEME_PRESETS[preset];
+  const stored = data.profileThemeColors && typeof data.profileThemeColors === 'object'
+    ? data.profileThemeColors
+    : {};
+
+  return {
+    preset,
+    colors: {
+      accent: normalizeHexColor(stored.accent) || base.accent,
+      bgStart: normalizeHexColor(stored.bgStart) || base.bgStart,
+      bgEnd: normalizeHexColor(stored.bgEnd) || base.bgEnd,
+      text: normalizeHexColor(stored.text) || base.text,
+      textMuted: normalizeHexColor(stored.textMuted) || base.textMuted,
+      panelBg: normalizeHexColor(stored.panelBg) || base.panelBg
+    }
+  };
+}
+
+function setThemeInputValues(colors) {
+  const accent = document.getElementById('profile-theme-accent');
+  const bgStart = document.getElementById('profile-theme-bg-start');
+  const bgEnd = document.getElementById('profile-theme-bg-end');
+  const text = document.getElementById('profile-theme-text');
+  const textMuted = document.getElementById('profile-theme-text-muted');
+  const panelBg = document.getElementById('profile-theme-panel-bg');
+
+  if (accent) accent.value = colors.accent;
+  if (bgStart) bgStart.value = colors.bgStart;
+  if (bgEnd) bgEnd.value = colors.bgEnd;
+  if (text) text.value = colors.text;
+  if (textMuted) textMuted.value = colors.textMuted;
+  if (panelBg) panelBg.value = colors.panelBg;
+}
+
+function readThemeInputValues(preset) {
+  const base = PROFILE_THEME_PRESETS[normalizeThemePreset(preset)];
+  const accent = normalizeHexColor(document.getElementById('profile-theme-accent')?.value) || base.accent;
+  const bgStart = normalizeHexColor(document.getElementById('profile-theme-bg-start')?.value) || base.bgStart;
+  const bgEnd = normalizeHexColor(document.getElementById('profile-theme-bg-end')?.value) || base.bgEnd;
+  const text = normalizeHexColor(document.getElementById('profile-theme-text')?.value) || base.text;
+  const textMuted = normalizeHexColor(document.getElementById('profile-theme-text-muted')?.value) || base.textMuted;
+  const panelBg = normalizeHexColor(document.getElementById('profile-theme-panel-bg')?.value) || base.panelBg;
+
+  return { accent, bgStart, bgEnd, text, textMuted, panelBg };
+}
+
 function profileFromAccountData(data) {
   const username = String(data.username || 'unknown').trim();
   const displayName = String(data.displayName || username).trim();
@@ -132,6 +243,7 @@ function profileFromAccountData(data) {
   const songUrl = String(data.songUrl || '').trim();
   const profileImageUrl = normalizeHttpUrl(data.profileImageUrl || '');
   const profileImageRequestedUrl = normalizeHttpUrl(data.profileImageRequestedUrl || '');
+  const theme = profileThemeFromData(data);
   const rawProfileImageStatus = String(data.profileImageStatus || '').trim().toLowerCase();
   let profileImageStatus = 'none';
   if (rawProfileImageStatus === 'approved' && profileImageUrl) {
@@ -151,7 +263,9 @@ function profileFromAccountData(data) {
     songUrl,
     profileImageUrl,
     profileImageRequestedUrl,
-    profileImageStatus
+    profileImageStatus,
+    profileThemePreset: theme.preset,
+    profileThemeColors: theme.colors
   };
 }
 
@@ -430,6 +544,17 @@ function renderProfileView(profile) {
 
   // Validation Check
   if (!view || !links || !songWrap || !songPlayer || !avatar || !avatarFallback) return;
+  const card = view.querySelector('.profile-card');
+
+  if (card) {
+    const theme = profileThemeFromData(profile);
+    card.style.setProperty('--profile-accent', theme.colors.accent);
+    card.style.setProperty('--profile-bg-start', theme.colors.bgStart);
+    card.style.setProperty('--profile-bg-end', theme.colors.bgEnd);
+    card.style.setProperty('--profile-text', theme.colors.text);
+    card.style.setProperty('--profile-text-muted', theme.colors.textMuted);
+    card.style.setProperty('--profile-panel-bg', theme.colors.panelBg);
+  }
 
   // Set Profile Identity
   currentProfileUsername = profile.username;
@@ -586,6 +711,8 @@ function fillProfileSettings(profile) {
   const imageUrl = document.getElementById('profile-image-url');
   const imageStatus = document.getElementById('profile-image-request-status');
   const bio = document.getElementById('profile-bio');
+  const themePreset = document.getElementById('profile-theme-preset');
+  const theme = profileThemeFromData(profile);
   
   if (displayName) displayName.value = profile.displayName || '';
   if (pronouns) pronouns.value = profile.pronouns || '';
@@ -593,7 +720,19 @@ function fillProfileSettings(profile) {
   if (imageUrl) imageUrl.value = profile.profileImageRequestedUrl || profile.profileImageUrl || '';
   if (imageStatus) imageStatus.textContent = profileImageHintFromStatus(profile);
   if (bio) bio.value = profile.bio || '';
+  if (themePreset) themePreset.value = theme.preset;
+  setThemeInputValues(theme.colors);
 }
+
+window.applyProfileThemePreset = function () {
+  const preset = normalizeThemePreset(document.getElementById('profile-theme-preset')?.value);
+  setThemeInputValues(PROFILE_THEME_PRESETS[preset]);
+};
+
+window.resetProfileThemeColors = function () {
+  const preset = normalizeThemePreset(document.getElementById('profile-theme-preset')?.value);
+  setThemeInputValues(PROFILE_THEME_PRESETS[preset]);
+};
 
 function renderUsersList(docs) {
   latestUsersListDocs = docs;
@@ -1023,6 +1162,8 @@ window.saveProfileSettings = async function () {
   const songUrl = normalizeSongUrl(songUrlInput);
   const profileImageInput = document.getElementById('profile-image-url')?.value.trim() || '';
   const requestedImageUrl = normalizeHttpUrl(profileImageInput);
+  const profileThemePreset = normalizeThemePreset(document.getElementById('profile-theme-preset')?.value || 'classic');
+  const profileThemeColors = readThemeInputValues(profileThemePreset);
 
   if (songUrlInput && !songUrl) {
     setUsersMessage('Background song must be a valid YouTube URL.', true);
@@ -1083,6 +1224,8 @@ window.saveProfileSettings = async function () {
       profileImageUrl,
       profileImageRequestedUrl,
       profileImageStatus,
+      profileThemePreset,
+      profileThemeColors,
       updatedAt: serverTimestamp()
     };
 
@@ -1101,7 +1244,9 @@ window.saveProfileSettings = async function () {
       songUrl,
       profileImageUrl,
       profileImageRequestedUrl,
-      profileImageStatus
+      profileImageStatus,
+      profileThemePreset,
+      profileThemeColors
     });
     usersByUsernameLower.set(profile.usernameLower, profile);
 
@@ -1149,6 +1294,8 @@ window.registerUser = async function () {
       profileImageUrl: '',
       profileImageRequestedUrl: '',
       profileImageStatus: 'none',
+      profileThemePreset: 'classic',
+      profileThemeColors: PROFILE_THEME_PRESETS.classic,
       createdAt: serverTimestamp()
     }, { merge: true });
     setUsersMessage('Account created. You are now logged in.');
