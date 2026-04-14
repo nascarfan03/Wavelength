@@ -1,9 +1,9 @@
 [
-  { "slug": "1v1lol", "type": "html" },
-  { "slug": "retro-bowl", "type": "html" },
-  { "slug": "run-3", "type": "html" },
-  { "slug": "slope", "type": "html" },
-  { "slug": "minecraft-classic", "type": "html" },
-  { "slug": "1066-45949cba", "type": "ruffle" },
+  { "slug": "fnae", "type": "webPorts" },
+  { "slug": "mfr", "type": "webPorts" },
+  { "slug": "helltaker", "type": "webPorts" },
+  { "slug": "raldi", "type": "webPorts" },
+  { "slug": "mcpe", "type": "webPorts" },
+  { "slug": "ntte", "type": "ruffle" },
   { "slug": "adgac", "type": "webPorts" }
 ]
