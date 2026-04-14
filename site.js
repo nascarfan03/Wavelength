@@ -145,13 +145,13 @@ const PROFILE_THEME_PRESETS = {
     bar: '#2596be'
   },
   'pydra-dark': {
-    accent: '#2eb0df',
+    accent: '#2596be',
     bgStart: '#0a0a0a',
     bgEnd: '#141414',
     text: '#ffffff',
     textMuted: '#b0b0b0',
     panelBg: '#2a2a2a',
-    bar: '#00d9ff'
+    bar: '#1f7fa1'
   },
   sunset: {
     accent: '#c2410c',
