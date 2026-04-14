@@ -27,16 +27,20 @@
 
 :root {
     --theme-bar-bg: #000080;
+    --theme-body-start: #008080;
+    --theme-body-end: #008080;
+    --theme-body-grid: rgba(255, 255, 255, 0.05);
 }
 
 body {
    -webkit-text-stroke: 1px white;
    paint-order: stroke fill;
-    background-color: rgba(0, 128, 128);
+    background-color: var(--theme-body-end, #008080);
     background-image:
-        linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
-    background-size: 8px 8px;
+        linear-gradient(135deg, var(--theme-body-start, #008080) 0%, var(--theme-body-end, #008080) 100%),
+        linear-gradient(var(--theme-body-grid, rgba(255,255,255,0.05)) 1px, transparent 1px),
+        linear-gradient(90deg, var(--theme-body-grid, rgba(255,255,255,0.05)) 1px, transparent 1px);
+    background-size: cover, 8px 8px, 8px 8px;
     display: flex;
     justify-content: center;
     align-items: center;

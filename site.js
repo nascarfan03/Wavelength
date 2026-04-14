@@ -265,6 +265,33 @@ function resetGlobalBarColor() {
   document.documentElement.style.setProperty('--theme-bar-bg', DEFAULT_UI_BAR_COLOR);
 }
 
+function colorLuminance(hex) {
+  const normalized = normalizeHexColor(hex);
+  if (!normalized) return 0;
+  const r = parseInt(normalized.slice(1, 3), 16);
+  const g = parseInt(normalized.slice(3, 5), 16);
+  const b = parseInt(normalized.slice(5, 7), 16);
+  return ((0.2126 * r) + (0.7152 * g) + (0.0722 * b)) / 255;
+}
+
+function applyGlobalBackground(colors) {
+  const start = normalizeHexColor(colors?.bgStart) || '#008080';
+  const end = normalizeHexColor(colors?.bgEnd) || '#008080';
+  const isDark = colorLuminance(end) < 0.45;
+  const grid = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.07)';
+  const root = document.documentElement;
+  root.style.setProperty('--theme-body-start', start);
+  root.style.setProperty('--theme-body-end', end);
+  root.style.setProperty('--theme-body-grid', grid);
+}
+
+function resetGlobalBackground() {
+  const root = document.documentElement;
+  root.style.setProperty('--theme-body-start', '#008080');
+  root.style.setProperty('--theme-body-end', '#008080');
+  root.style.setProperty('--theme-body-grid', 'rgba(255, 255, 255, 0.05)');
+}
+
 function profileFromAccountData(data) {
   const username = String(data.username || 'unknown').trim();
   const displayName = String(data.displayName || username).trim();
@@ -401,6 +428,7 @@ window.switchTab = function switchTab(name, e) {
   document.getElementById('tab-' + name).classList.add('active');
   if (name !== 'profile') {
     resetGlobalBarColor();
+    resetGlobalBackground();
     const url = new URL(window.location.href);
     url.searchParams.delete('profile');
     history.replaceState({}, '', url);
@@ -579,6 +607,7 @@ function renderProfileView(profile) {
 
   const theme = profileThemeFromData(profile);
   applyGlobalBarColor(theme.colors.bar);
+  applyGlobalBackground(theme.colors);
 
   if (card) {
     card.style.setProperty('--profile-accent', theme.colors.accent);
@@ -721,6 +750,7 @@ async function loadProfileByUsername(username) {
       currentProfileUsername = '';
       setProfileQuery('');
       resetGlobalBarColor();
+      resetGlobalBackground();
       return;
     }
 
@@ -736,6 +766,7 @@ async function loadProfileByUsername(username) {
     currentProfileUsername = '';
     setProfileQuery('');
     resetGlobalBarColor();
+    resetGlobalBackground();
   }
 }
 
@@ -1131,6 +1162,7 @@ window.openUsersTab = function () {
 window.openProfileTab = function () {
   if (!currentProfileUsername) {
     resetGlobalBarColor();
+    resetGlobalBackground();
     setProfileStatus('Select a user from the users list.');
   }
 };
