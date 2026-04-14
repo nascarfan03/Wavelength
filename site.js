@@ -1021,6 +1021,15 @@ function filterText(text) {
   return filtered;
 }
 
+function containsBlockedWord(text) {
+  const candidate = String(text || '').normalize('NFKC');
+  for (const regex of badWordMatchers) {
+    regex.lastIndex = 0;
+    if (regex.test(candidate)) return true;
+  }
+  return false;
+}
+
 function startListener() {
   const q = query(collection(db, 'messages'), orderBy('time', 'desc'), limit(100));
   onSnapshot(q, (snap) => {
@@ -1169,18 +1178,22 @@ async function showChatUI() {
 window.openChatTab = async function () {
   const saved = localStorage.getItem('wl_username');
   if (saved) {
-    const nameRef = doc(db, 'usernames', saved.toLowerCase());
-    const snap = await getDoc(nameRef);
-    const canClaimByLink = snap.exists() && currentAccount && snap.data().authUid === currentAccount.uid;
-    if (!snap.exists() || snap.data().uid === uid || canClaimByLink) {
-      const payload = { uid, name: saved };
-      if (currentAccount) payload.authUid = currentAccount.uid;
-      await setDoc(nameRef, payload, { merge: true });
-      currentUser = saved;
-      await showChatUI();
-      return;
-    } else {
+    if (containsBlockedWord(saved)) {
       localStorage.removeItem('wl_username');
+    } else {
+      const nameRef = doc(db, 'usernames', saved.toLowerCase());
+      const snap = await getDoc(nameRef);
+      const canClaimByLink = snap.exists() && currentAccount && snap.data().authUid === currentAccount.uid;
+      if (!snap.exists() || snap.data().uid === uid || canClaimByLink) {
+        const payload = { uid, name: saved };
+        if (currentAccount) payload.authUid = currentAccount.uid;
+        await setDoc(nameRef, payload, { merge: true });
+        currentUser = saved;
+        await showChatUI();
+        return;
+      } else {
+        localStorage.removeItem('wl_username');
+      }
     }
   }
   const modal = document.getElementById('username-modal');
@@ -1194,6 +1207,10 @@ window.joinChat = async function () {
   const name = document.getElementById('username-input')?.value.trim();
   const errorEl = document.getElementById('username-error');
   if (!name) return;
+  if (containsBlockedWord(name)) {
+    if (errorEl) errorEl.textContent = '✕ that name contains blocked words.';
+    return;
+  }
 
   const nameRef = doc(db, 'usernames', name.toLowerCase());
   const snap = await getDoc(nameRef);
@@ -1376,6 +1393,10 @@ window.saveProfileSettings = async function () {
     setUsersMessage('Profile image must be a valid http(s) URL.', true);
     return;
   }
+  if (displayName && containsBlockedWord(displayName)) {
+    setUsersMessage('Display name contains blocked words.', true);
+    return;
+  }
 
   try {
     const accountRef = doc(db, 'accounts', currentAccount.uid);
@@ -1484,6 +1505,10 @@ window.registerUser = async function () {
   }
   if (!password || password.length < 6) {
     setUsersMessage('Password must be at least 6 characters.', true);
+    return;
+  }
+  if (containsBlockedWord(username)) {
+    setUsersMessage('Username contains blocked words.', true);
     return;
   }
 
