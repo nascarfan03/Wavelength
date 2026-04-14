@@ -291,6 +291,12 @@ function resetGlobalBackground() {
   root.style.setProperty('--theme-body-grid', 'rgba(255, 255, 255, 0.05)');
 }
 
+function applyGlobalThemeFromProfile(profile) {
+  const theme = profileThemeFromData(profile || {});
+  applyGlobalBarColor(theme.colors.bar);
+  applyGlobalBackground(theme.colors.bar);
+}
+
 function profileFromAccountData(data) {
   const username = String(data.username || 'unknown').trim();
   const displayName = String(data.displayName || username).trim();
@@ -605,8 +611,7 @@ function renderProfileView(profile) {
   const card = view.querySelector('.profile-card');
 
   const theme = profileThemeFromData(profile);
-  applyGlobalBarColor(theme.colors.bar);
-  applyGlobalBackground(theme.colors.bar);
+  applyGlobalThemeFromProfile(profile);
 
   if (card) {
     card.style.setProperty('--profile-accent', theme.colors.accent);
@@ -1163,7 +1168,16 @@ window.openProfileTab = function () {
     resetGlobalBarColor();
     resetGlobalBackground();
     setProfileStatus('Select a user from the users list.');
+    return;
   }
+
+  const existing = usersByUsernameLower.get(normalizeUsername(currentProfileUsername));
+  if (existing) {
+    applyGlobalThemeFromProfile(existing);
+    return;
+  }
+
+  void loadProfileByUsername(currentProfileUsername);
 };
 
 window.openProfileByUsername = async function (username) {
