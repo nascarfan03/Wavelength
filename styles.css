@@ -921,7 +921,7 @@ body {
     border: 2px solid;
     border-color: #808080 #fff #fff #808080;
     background: #fff;
-    padding: 6px;
+    padding: 8px;
 }
 
 .games-popular-heading-row {
@@ -947,7 +947,7 @@ body {
 
 .games-popular-list {
     display: flex;
-    gap: 6px;
+    gap: 8px;
     overflow-x: auto;
     padding-bottom: 2px;
     scroll-behavior: smooth;
@@ -956,12 +956,12 @@ body {
 }
 
 .popular-game-btn {
-    flex: 0 0 120px;
+    flex: 0 0 140px;
     border: 2px solid;
     border-color: #fff #808080 #808080 #fff;
     background: #c0c0c0;
     cursor: pointer;
-    padding: 4px;
+    padding: 5px;
     font-family: inherit;
     text-align: left;
 }
@@ -990,8 +990,8 @@ body {
 
 .popular-game-name {
     display: block;
-    font-size: 10px;
-    line-height: 1.2;
+    font-size: 11px;
+    line-height: 1.25;
     color: #000080;
     overflow: hidden;
     white-space: nowrap;
