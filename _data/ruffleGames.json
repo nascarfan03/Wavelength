@@ -24946,5 +24946,12 @@
     "path": "NoTimeToExplain/index.html",
     "thumbnail": "png/ntte.png",
     "description": ""
+  },
+     {
+    "name": "The Binding of Isaac",
+    "slug": "binding-of-isaac",
+    "path": "binding-of-isaac/index.html",
+    "thumbnail": "png/isaac.png",
+    "description": ""
   }
 ]

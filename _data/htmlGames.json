@@ -1680,11 +1680,11 @@
     "description": ""
   },
   {
-    "name": "Kill the Ice Age Baby",
+    "name": "Kill the Ice Age Baby Adventure",
     "slug": "iceagebaby",
     "path": "iceagebaby/index.html",
     "cdn": "html",
-    "thumbnail": "../404.jpg",
+    "thumbnail": "png/iceage1.png",
     "description": ""
   },
   {
@@ -1692,7 +1692,7 @@
     "slug": "iceagebaby2",
     "path": "iceagebaby2/index.html",
     "cdn": "html",
-    "thumbnail": "../404.jpg",
+    "thumbnail": "png/iceage2.png",
     "description": ""
   },
   {
