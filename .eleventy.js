@@ -4,6 +4,7 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy("fonts");
   eleventyConfig.addPassthroughCopy("styles.css");
   eleventyConfig.addPassthroughCopy("games-loader.js");
+  eleventyConfig.addPassthroughCopy("site.js");
   eleventyConfig.addPassthroughCopy("credits");
   eleventyConfig.addPassthroughCopy("firebase-config.js");
   eleventyConfig.addPassthroughCopy("src/assets");
