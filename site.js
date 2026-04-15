@@ -38,7 +38,7 @@ let chatTimeoutUnsubscribe = null;
 const embeddedBadgeConfig = window.__BADGE_CONFIG__ || {};
 const embeddedProfileButtons = window.__PROFILE_BUTTON_ASSETS__ || [];
 const DEFAULT_UI_BAR_COLOR = '#000080';
-const MAX_PROFILE_BUTTONS = 12;
+const MAX_PROFILE_BUTTONS = 150;
 
 // Utility functions
 function esc(s) {
