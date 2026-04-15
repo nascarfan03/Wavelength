@@ -16,13 +16,19 @@
       "id": "well-known",
       "label": "well-known",
       "title": "well-known community member",
-      "image": "./assets/badges/users/well-known.svg"
+      "image": "./assets/badges/users/msn-green.png"
     },
      {
       "id": "gay",
       "label": "gay",
       "title": "gay homeboy",
       "image": "./assets/badges/users/gay.jpg"
+    },
+     {
+      "id": "bug",
+      "label": "bug",
+      "title": "bug hunter",
+      "image": "./assets/badges/users/bug.jpg"
     }
   ],
   "users": {
@@ -31,6 +37,8 @@
     "Itz_kire": ["co-owner"],
     "minodab492": ["co-owner"],
     "December": ["moderator"],
-    "goon master": ["gay"]
+    "goon master": ["gay"],
+    "Decker_Dawg": ["well-known"],
+    "cl": ["well-known"]
   }
 }
