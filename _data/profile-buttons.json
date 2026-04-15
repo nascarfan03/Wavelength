@@ -7,6 +7,7 @@
   "./assets/buttons/firefox2.png",
   "./assets/buttons/firefox3.png",
   "./assets/buttons/firefox4.png",
+  "./assets/buttons/firefox5.png",
   "./assets/buttons/gitgay.png",
   "./assets/buttons/github.png",
   "./assets/buttons/handcoded.png",
@@ -42,5 +43,9 @@
   "./assets/buttons/kirbysquish.gif",
   "./assets/buttons/linkinpark.gif",
   "./assets/buttons/shockwave.gif",
-  "./assets/buttons/windows_media_player.gif"
+  "./assets/buttons/windows_media_player.gif",
+  "./assets/buttons/javanow.png",
+  "./assets/buttons/xkcd.png",
+  "./assets/buttons/any-browser.png",
+  "./assets/buttons/vocaloid.png"
 ]
