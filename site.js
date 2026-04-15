@@ -1285,18 +1285,27 @@ window.timeoutUserByName = async function () {
   const username = prompt('Enter the username to timeout (case-sensitive):');
   if (!username) return;
   const normalized = normalizeUsername(username);
-  // Look up the username in the usernames collection
   try {
+    // Try usernames collection first
     const nameRef = doc(db, 'usernames', normalized);
     const snap = await getDoc(nameRef);
-    if (!snap.exists()) {
-      alert('Username not found.');
-      return;
-    }
-    const targetUid = snap.data().uid;
+    let targetUid = snap.exists() ? snap.data().uid : null;
     if (!targetUid) {
-      alert('Could not find UID for that username.');
-      return;
+      // If not found, search recent chat messages for the username
+      const q = query(collection(db, 'messages'), orderBy('time', 'desc'), limit(100));
+      const msgSnap = await getDocs(q);
+      let found = false;
+      msgSnap.forEach(docSnap => {
+        const data = docSnap.data();
+        if (normalizeUsername(data.user) === normalized && data.uid) {
+          targetUid = data.uid;
+          found = true;
+        }
+      });
+      if (!found) {
+        alert('That user is not currently active in chat.');
+        return;
+      }
     }
     await applyTimeoutToUid(targetUid, username);
     alert(`User '${username}' has been timed out.`);
