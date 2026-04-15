@@ -21,7 +21,7 @@
      {
       "id": "gay",
       "label": "gay",
-      "title": "gay homeboy",
+      "title": "gay",
       "image": "./assets/badges/users/gay.jpg"
     },
      {
@@ -38,7 +38,8 @@
     "minodab492": ["co-owner"],
     "December": ["moderator"],
     "goon master": ["gay"],
-    "Decker_Dawg": ["well-known"],
-    "cl": ["well-known"]
+    "Decker_Dawg": ["well-known", "gay"],
+    "cl": ["well-known", "gay"],
+    "lulu": ["gay"]
   }
 }
