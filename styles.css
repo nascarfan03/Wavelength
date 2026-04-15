@@ -692,18 +692,18 @@ body {
 }
 
 .profile-display-name {
-    font-size: 18px;
+    font-size: 22px;
     font-weight: bold;
     color: var(--profile-accent, #000080);
 }
 
 .profile-username {
-    font-size: 11px;
+    font-size: 14px;
     color: var(--profile-text-muted, #444);
 }
 
 .profile-pronouns {
-    font-size: 11px;
+    font-size: 14px;
     color: var(--profile-accent, #000080);
     font-weight: bold;
 }
@@ -776,7 +776,7 @@ body {
     background: var(--profile-panel-bg, #fff);
     color: var(--profile-text, #000);
     padding: 8px;
-    font-size: 12px;
+    font-size: 15px;
     min-height: 72px;
     white-space: pre-wrap;
 }
