@@ -2,7 +2,7 @@
  * games-loader.js
  * Universal Fetch-and-Inject Game Loader for Wavelength UI.
  *
- * CDN switching: Statically (default) | jsDelivr | GitHack | StaticDelivr
+ * CDN switching: jsDelivr (default) | Statically | GitHack | StaticDelivr
  * Each CDN has its own base URL set injected via window.__*_URLS__ globals.
  */
 
@@ -18,13 +18,13 @@
 
   // CDN definitions — labels and which global holds their base URLs
   const CDNS = [
-    { key: "statically", label: "Statically", urlsGlobal: "__BASE_URLS__"     },
     { key: "jsdelivr",   label: "jsDelivr",   urlsGlobal: "__JSDELIVR_URLS__"  },
+    { key: "statically", label: "Statically", urlsGlobal: "__BASE_URLS__"     },
     { key: "githack",    label: "GitHack",     urlsGlobal: "__GITHACK_URLS__"   },
     { key: "staticdelivr", label: "StaticDelivr", urlsGlobal: "__STATICDELIVR_URLS__" },
   ];
 
-  let currentCdn = "statically";
+  let currentCdn = "jsdelivr";
 
   let allGames = [];
   let filteredGames = [];
