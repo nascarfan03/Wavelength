@@ -343,6 +343,12 @@
       cdnIndicator.textContent = CDNS.find(c => c.key === currentCdn)?.label || currentCdn;
     }
 
+    // Show/hide helpful note for web ports
+    const webportsNote = document.getElementById("webports-note");
+    if (webportsNote) {
+      webportsNote.style.display = (type === "webPorts") ? "block" : "none";
+    }
+
     try {
       const response = await fetch(gameUrl + "?t=" + Date.now());
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -389,6 +395,8 @@
 
     window.__CURRENT_GAME_URL__ = null;
     window.__CURRENT_GAME__     = null;
+    const webportsNote = document.getElementById("webports-note");
+    if (webportsNote) webportsNote.style.display = "none";
   };
 
   // ---------------------------------------------------------------------------
