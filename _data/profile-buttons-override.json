@@ -2,16 +2,19 @@
   "users": {
     "December": [
       {
-        "label": "Mod Panel",
-        "url": "https://admin.example.com",
-        "image": "./assets/buttons/modpanel.png"
-      }
-    ],
-    "aj": [
+        "label": "dess",
+        "url": "",
+        "image": "./assets/buttons/d/dess.png"
+      },
       {
-        "label": "Owner Tools",
-        "url": "https://owner.example.com",
-        "image": "./assets/buttons/ownertools.png"
+        "label": "kris",
+        "url": "",
+        "image": "./assets/buttons/d/kris.png"
+      },
+      {
+        "label": "tornado",
+        "url": "",
+        "image": "./assets/buttons/d/Tornado.png"
       }
     ]
   }
