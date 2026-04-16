@@ -1,14 +1,21 @@
 # making a mirror of wavelength/alt link
 want to make a new link for yourself?
 
+## cloudflare pages
 this runs on eleventy so first fork the repository
 
 go to cloudflare pages and deploy the repository
 
 set the command for building to npm run start
 
-this will work fine for now, but won't update if there's new features added, so add the github action from [here](https://github.com/ajtabjs/Wavelength/blob/main/.github/workflows/upstream-sync.yml)
-
-save it in the .github/workflows folder and name the yml file whatever, it'll refresh your mirror every 7 minutes
+there's a workflow that toggles to update your fork every 7 minutes so it'll stay up to date
 
 and thats it!
+
+## github pages
+
+Go to your fork click the settings tab then pages
+
+under "Build and deployment", select github actions
+
+then it should work i guess, havent tried it
