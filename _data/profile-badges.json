@@ -35,6 +35,12 @@
       "label": "bug",
       "title": "bug hunter",
       "image": "./assets/badges/users/bug.png"
+    },
+    {
+      "id": "decker",
+      "label": "decker",
+      "title": "decker dude",
+      "image": "./assets/badges/users/Nirvana_InUtero.jpg"
     }
   ],
   "users": {
@@ -44,7 +50,7 @@
     "minodab492": ["co-owner"],
     "December": ["moderator"],
     "goon master": ["gay"],
-    "Decker_Dawg": ["well-known", "gay"],
+    "Decker_Dawg": ["well-known", "gay", "decker"],
     "cl": ["well-known", "gay"],
     "lulu": ["gay"],
     "‎ ‎": ["bug"],
