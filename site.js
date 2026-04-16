@@ -1932,7 +1932,6 @@ window.saveProfileSettings = async function () {
       profileThemePreset,
       profileThemeColors,
       profileButtons,
-        profileBadges,
       updatedAt: serverTimestamp()
     };
 
