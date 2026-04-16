@@ -1002,7 +1002,8 @@ function renderProfileView(profile) {
   if (bioEl) bioEl.textContent = profile.bio || 'No bio yet.';
   if (profileButtonsWrap) {
     profileButtonsWrap.innerHTML = '';
-    // Show override buttons if present
+    let hasButtons = false;
+    // Show override buttons first if present
     if (embeddedProfileButtonOverrides && embeddedProfileButtonOverrides[profile.username]) {
       const overrides = embeddedProfileButtonOverrides[profile.username];
       if (overrides.length) {
@@ -1026,10 +1027,11 @@ function renderProfileView(profile) {
             profileButtonsWrap.appendChild(item);
           }
         });
-      } else {
-        profileButtonsWrap.style.display = 'none';
+        hasButtons = true;
       }
-    } else if (profile.profileButtons.length) {
+    }
+    // Then show user's own selected buttons
+    if (profile.profileButtons.length) {
       profileButtonsWrap.style.display = 'flex';
       profile.profileButtons.forEach((assetPath) => {
         const item = document.createElement('span');
@@ -1042,7 +1044,9 @@ function renderProfileView(profile) {
         item.appendChild(image);
         profileButtonsWrap.appendChild(item);
       });
-    } else {
+      hasButtons = true;
+    }
+    if (!hasButtons) {
       profileButtonsWrap.style.display = 'none';
     }
   }
