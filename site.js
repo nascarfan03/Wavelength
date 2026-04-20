@@ -1433,7 +1433,7 @@ const hardenedChatRegexes = [
   // Block discord invites
   /discord\.(gg|com|io|me)\/[a-z0-9]+/gi,
   // Block obvious obfuscation (e.g. l33t, s p a c e d)
-  /([a-zA-Z])\s{1,3}(?=[a-zA-Z])/g,
+  // (Removed: was too aggressive and censored normal messages)
   // Block unicode block/box drawing spam
   /[\u2500-\u25FF]{3,}/g,
   // Block emoji spam (3+ emojis in a row)
