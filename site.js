@@ -1453,7 +1453,8 @@ function buildBadWordMatcher(entry) {
   if (!tokens.length) return null;
 
   const phrasePattern = tokens.map(escapeRegex).join('[\\s\\p{P}\\p{S}_]*');
-  return new RegExp(`(?<![\\p{L}\\p{N}])${phrasePattern}(?![\\p{L}\\p{N}])`, 'giu');
+  // Only match if the phrase is a whole word (surrounded by word boundaries or non-letter/number)
+  return new RegExp(`(?:^|[^\\p{L}\\p{N}])${phrasePattern}(?=[^\\p{L}\\p{N}]|$)`, 'giu');
 }
 
 fetch('./assets/badwords.txt')
