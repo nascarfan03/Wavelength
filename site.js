@@ -1644,9 +1644,27 @@ function renderMessage(docSnap) {
     // Escape regex special chars in usernames
     const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const mentionRegex = new RegExp(`@(${usernames.map(esc).join('|')})\\b`, 'gi');
-    msg = msg.replace(mentionRegex, (m, uname) => `<span class=\"chat-mention\">@${uname}</span>`);
+    msg = msg.replace(mentionRegex, (m, uname) => {
+      // Link to profile tab with ?profile=username
+      return `<a href="?profile=${encodeURIComponent(uname)}" class=\"chat-mention\" data-username="${uname}">@${uname}</a>`;
+    });
   }
   textEl.innerHTML = msg;
+  // Add click handler to open profile tab without page reload
+  textEl.querySelectorAll && textEl.querySelectorAll('.chat-mention').forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      const uname = link.getAttribute('data-username');
+      if (uname && typeof window.switchTab === 'function') {
+        window.switchTab('profile');
+        if (typeof window.loadProfileByUsername === 'function') {
+          window.loadProfileByUsername(uname);
+        }
+      } else {
+        window.location.href = link.href;
+      }
+    });
+  });
 
   el.appendChild(userMeta);
   el.appendChild(timeEl);
