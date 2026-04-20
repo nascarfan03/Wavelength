@@ -1419,6 +1419,26 @@ function startSendCooldown() {
   }, 1000);
 }
 
+
+// List of extra hardened regex patterns for chat moderation
+const hardenedChatRegexes = [
+  // Block repeated characters (e.g. ffffuuuu)
+  /([a-zA-Z])\1{4,}/gi,
+  // Block Zalgo text (excessive diacritics)
+  /[\u0300-\u036f]{3,}/g,
+  // Block URLs
+  /https?:\/\/[\w\-._~:/?#[\]@!$&'()*+,;=%]+/gi,
+  // Block IP addresses
+  /\b\d{1,3}(?:\.\d{1,3}){3}\b/g,
+  // Block discord invites
+  /discord\.(gg|com|io|me)\/[a-z0-9]+/gi,
+  // Block obvious obfuscation (e.g. l33t, s p a c e d)
+  /([a-zA-Z])\s{1,3}(?=[a-zA-Z])/g,
+  // Block unicode block/box drawing spam
+  /[\u2500-\u25FF]{3,}/g,
+  // Block emoji spam (3+ emojis in a row)
+  /([\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]){3,}/gu
+];
 let badWordMatchers = [];
 
 function escapeRegex(text) {
@@ -1450,6 +1470,11 @@ fetch('./assets/badwords.txt')
 
 function filterText(text) {
   let filtered = text.normalize('NFKC');
+  // Apply hardened regexes first
+  for (const regex of hardenedChatRegexes) {
+    filtered = filtered.replace(regex, m => '*'.repeat(Array.from(m).length));
+  }
+  // Then apply bad word matchers
   for (const regex of badWordMatchers) {
     filtered = filtered.replace(regex, m => '*'.repeat(Array.from(m).length));
   }
@@ -1458,6 +1483,12 @@ function filterText(text) {
 
 function containsBlockedWord(text) {
   const candidate = String(text || '').normalize('NFKC');
+  // Check hardened regexes first
+  for (const regex of hardenedChatRegexes) {
+    regex.lastIndex = 0;
+    if (regex.test(candidate)) return true;
+  }
+  // Then check bad word matchers
   for (const regex of badWordMatchers) {
     regex.lastIndex = 0;
     if (regex.test(candidate)) return true;
