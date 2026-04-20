@@ -1567,7 +1567,17 @@ function renderMessage(docSnap) {
 
   const textEl = document.createElement('span');
   textEl.className = 'msg-text';
-  textEl.textContent = String(data.text || '');
+  // Mention parsing: replace @username with a span
+  let msg = String(data.text || '');
+  // Build a regex of all known usernames (case-insensitive)
+  const usernames = Array.from(usersByUsernameLower.values()).map(u => u.username).sort((a,b)=>b.length-a.length);
+  if (usernames.length) {
+    // Escape regex special chars in usernames
+    const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const mentionRegex = new RegExp(`@(${usernames.map(esc).join('|')})\\b`, 'gi');
+    msg = msg.replace(mentionRegex, (m, uname) => `<span class=\"chat-mention\">@${uname}</span>`);
+  }
+  textEl.innerHTML = msg;
 
   el.appendChild(userMeta);
   el.appendChild(timeEl);
