@@ -1,12 +1,73 @@
-// Dynamically set the settings menu border color
-window.setSettingsBorderColor = function(color) {
-  const settings = document.getElementById('users-settings');
-  if (settings && color) {
-    settings.style.setProperty('--settings-border', color);
+// --- Chat mention autocomplete ---
+function setupChatMentionAutocomplete() {
+  const input = document.getElementById('chat-msg-input');
+  if (!input) return;
+  let suggestionBox = document.getElementById('chat-mention-suggestions');
+  if (!suggestionBox) {
+    suggestionBox = document.createElement('div');
+    suggestionBox.id = 'chat-mention-suggestions';
+    suggestionBox.style.position = 'absolute';
+    suggestionBox.style.zIndex = 1000;
+    suggestionBox.style.background = '#fff';
+    suggestionBox.style.border = '1px solid #808080';
+    suggestionBox.style.fontSize = '12px';
+    suggestionBox.style.display = 'none';
+    suggestionBox.style.maxHeight = '120px';
+    suggestionBox.style.overflowY = 'auto';
+    suggestionBox.style.boxShadow = '2px 2px 6px rgba(0,0,0,0.12)';
+    document.body.appendChild(suggestionBox);
   }
-  // Also update the root variable for global effect if needed
-  document.documentElement.style.setProperty('--settings-border', color || '#ff9800');
+  input.addEventListener('input', function(e) {
+    const val = input.value;
+    const atIdx = val.lastIndexOf('@');
+    if (atIdx === -1 || (atIdx > 0 && /\S/.test(val[atIdx-1]))) {
+      suggestionBox.style.display = 'none';
+      return;
+    }
+    const partial = val.slice(atIdx+1).toLowerCase();
+    if (!partial) {
+      suggestionBox.style.display = 'none';
+      return;
+    }
+    const usernames = Array.from(usersByUsernameLower.values()).map(u => u.username);
+    const matches = usernames.filter(u => u.toLowerCase().startsWith(partial)).slice(0,8);
+    if (!matches.length) {
+      suggestionBox.style.display = 'none';
+      return;
+    }
+    suggestionBox.innerHTML = '';
+    matches.forEach(u => {
+      const item = document.createElement('div');
+      item.textContent = '@' + u;
+      item.className = 'chat-mention-suggestion';
+      item.addEventListener('mousedown', function(ev) {
+        ev.preventDefault();
+        // Replace the @partial with @username
+        input.value = val.slice(0, atIdx+1) + u + ' ';
+        suggestionBox.style.display = 'none';
+        input.focus();
+      });
+      suggestionBox.appendChild(item);
+    });
+    // Position below input
+    const rect = input.getBoundingClientRect();
+    suggestionBox.style.left = rect.left + 'px';
+    suggestionBox.style.top = (rect.bottom + window.scrollY) + 'px';
+    suggestionBox.style.width = rect.width + 'px';
+    suggestionBox.style.display = 'block';
+  });
+  input.addEventListener('blur', function() {
+    setTimeout(() => { suggestionBox.style.display = 'none'; }, 100);
+  });
+}
+
+// Call this after chat UI is shown
+const origShowChatUI = showChatUI;
+showChatUI = async function() {
+  await origShowChatUI.apply(this, arguments);
+  setupChatMentionAutocomplete();
 };
+
 // site.js - Complete merged version with profile comments
 
 import { initializeApp }
@@ -40,12 +101,14 @@ let currentProfileUsername = '';
 let latestUsersListDocs = [];
 let badgeDefinitions = new Map();
 let userBadgesByUsernameLower = new Map();
+let reservedBadgeIds = new Set();
 let currentUserCanModerateChat = false;
 let currentUserIsFirestoreAdmin = false;
 let currentTimeoutUntilMs = 0;
 let chatTimeoutUnsubscribe = null;
 const embeddedBadgeConfig = window.__BADGE_CONFIG__ || {};
 const embeddedProfileButtons = window.__PROFILE_BUTTON_ASSETS__ || [];
+let embeddedProfileButtonOverrides = {};
 const DEFAULT_UI_BAR_COLOR = '#000080';
 const MAX_PROFILE_BUTTONS = 150;
 
@@ -99,6 +162,18 @@ const profileButtonAssets = Array.from(
   )
 );
 const profileButtonAssetSet = new Set(profileButtonAssets);
+
+// Load per-user button overrides from JSON (synchronously for Eleventy)
+fetch('./_data/profile-buttons-override.json')
+  .then(r => r.json())
+  .then(obj => {
+    if (obj && typeof obj === 'object' && obj.users) {
+      embeddedProfileButtonOverrides = obj.users;
+    }
+  })
+  .catch(() => {
+    embeddedProfileButtonOverrides = {};
+  });
 
 function initialsForProfile(profile) {
   const source = String(profile.displayName || profile.username || '?').trim();
@@ -395,7 +470,7 @@ function profileFromAccountData(data) {
   };
 }
 
-function renderProfileButtonPicker(selectedButtons = []) {
+function renderProfileButtonPicker(selectedButtons = [], username = null) {
   const picker = document.getElementById('profile-button-picker');
   if (!picker) return;
 
@@ -404,6 +479,29 @@ function renderProfileButtonPicker(selectedButtons = []) {
     picker.textContent = 'No profile buttons available.';
     return;
   }
+
+
+  // If user has overrides, show those as non-editable, then show their chosen buttons
+  if (username && embeddedProfileButtonOverrides && embeddedProfileButtonOverrides[username]) {
+    const overrides = embeddedProfileButtonOverrides[username];
+    overrides.forEach(btn => {
+      const option = document.createElement('label');
+      option.className = 'users-profile-button-option';
+      const image = document.createElement('img');
+      image.className = 'users-profile-button-image';
+      image.src = btn.image;
+      image.alt = btn.label;
+      image.loading = 'lazy';
+      option.appendChild(image);
+      const span = document.createElement('span');
+      span.textContent = btn.label;
+      option.appendChild(span);
+      picker.appendChild(option);
+    });
+    // Continue to show user's chosen buttons as checkboxes
+    // (fall through to the rest of the function)
+  }
+
 
   const selectedSet = new Set(
     (Array.isArray(selectedButtons) ? selectedButtons : [])
@@ -526,6 +624,45 @@ function normalizeBadgeConfig(rawConfig) {
 
   badgeDefinitions = defs;
   userBadgesByUsernameLower = userMap;
+  // Collect badge ids that are explicitly assigned to specific users
+  reservedBadgeIds = new Set();
+  for (const ids of userMap.values()) {
+    ids.forEach(id => reservedBadgeIds.add(id));
+  }
+}
+
+function renderProfileBadgePicker(selected = []) {
+  const picker = document.getElementById('profile-badge-picker');
+  if (!picker) return;
+  picker.innerHTML = '';
+
+  const selectedSet = new Set((selected || []).map(id => normalizeUsername(id)));
+
+  // Render badges that are not reserved for specific users
+  Array.from(badgeDefinitions.values()).forEach(b => {
+    if (reservedBadgeIds.has(b.id)) return;
+    const id = b.id;
+    const option = document.createElement('label');
+    option.className = 'profile-badge-option';
+    option.style.display = 'inline-flex';
+    option.style.alignItems = 'center';
+    option.style.marginRight = '8px';
+    option.style.cursor = 'pointer';
+
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.name = 'profile-badge';
+    checkbox.value = id;
+    checkbox.style.marginRight = '6px';
+    checkbox.checked = selectedSet.has(id);
+
+    const el = buildBadgeElement(b, 'profile-badge');
+    el.style.pointerEvents = 'none';
+
+    option.appendChild(checkbox);
+    option.appendChild(el);
+    picker.appendChild(option);
+  });
 }
 
 async function ensureBadgeConfigLoaded() {
@@ -937,6 +1074,35 @@ function renderProfileView(profile) {
   if (bioEl) bioEl.textContent = profile.bio || 'No bio yet.';
   if (profileButtonsWrap) {
     profileButtonsWrap.innerHTML = '';
+    let hasButtons = false;
+    // Show override buttons first if present
+    if (embeddedProfileButtonOverrides && embeddedProfileButtonOverrides[profile.username]) {
+      const overrides = embeddedProfileButtonOverrides[profile.username];
+      if (overrides.length) {
+        profileButtonsWrap.style.display = 'flex';
+        overrides.forEach(btn => {
+          const item = document.createElement('span');
+          item.className = 'profile-button-item';
+          const image = document.createElement('img');
+          image.className = 'profile-button-image';
+          image.src = btn.image;
+          image.alt = btn.label;
+          image.loading = 'lazy';
+          item.appendChild(image);
+          if (btn.url) {
+            const a = document.createElement('a');
+            a.href = btn.url;
+            a.target = '_blank';
+            a.appendChild(item);
+            profileButtonsWrap.appendChild(a);
+          } else {
+            profileButtonsWrap.appendChild(item);
+          }
+        });
+        hasButtons = true;
+      }
+    }
+    // Always show user's own selected buttons after overrides (if any)
     if (profile.profileButtons.length) {
       profileButtonsWrap.style.display = 'flex';
       profile.profileButtons.forEach((assetPath) => {
@@ -950,7 +1116,9 @@ function renderProfileView(profile) {
         item.appendChild(image);
         profileButtonsWrap.appendChild(item);
       });
-    } else {
+      hasButtons = true;
+    }
+    if (!hasButtons) {
       profileButtonsWrap.style.display = 'none';
     }
   }
@@ -971,9 +1139,17 @@ function renderProfileView(profile) {
 
   if (badgesWrap) {
     badgesWrap.innerHTML = '';
-    badgesForUsername(profile.username).forEach(badge => {
-      badgesWrap.appendChild(buildBadgeElement(badge, 'profile-badge'));
+    const reserved = badgesForUsername(profile.username) || [];
+    const chosen = Array.isArray(profile.profileBadges) ? profile.profileBadges
+      .map(id => badgeDefinitions.get(normalizeUsername(id))).filter(Boolean) : [];
+    const seen = new Set();
+    const combined = [];
+    reserved.concat(chosen).forEach(b => {
+      if (!b || seen.has(b.id)) return;
+      seen.add(b.id);
+      combined.push(b);
     });
+    combined.forEach(badge => badgesWrap.appendChild(buildBadgeElement(badge, 'profile-badge')));
   }
   if (imageNote) {
     const hint = profileImageHintFromStatus(profile);
@@ -1174,7 +1350,7 @@ async function loadProfileByUsername(username) {
   }
 }
 
-function fillProfileSettings(profile) {
+async function fillProfileSettings(profile) {
   const displayName = document.getElementById('profile-display-name');
   const pronouns = document.getElementById('profile-pronouns');
   const songUrl = document.getElementById('profile-song-url');
@@ -1196,7 +1372,8 @@ function fillProfileSettings(profile) {
   if (bio) bio.value = profile.bio || '';
   if (themePreset) themePreset.value = theme.preset;
   setThemeInputValues(theme.colors);
-  renderProfileButtonPicker(profile.profileButtons || []);
+  renderProfileButtonPicker(profile.profileButtons || [], profile.username);
+  // Remove badge picker from customization
 }
 
 window.applyProfileThemePreset = function () {
@@ -1251,12 +1428,16 @@ function renderUsersList(docs) {
     row.appendChild(rank);
     row.appendChild(link);
 
-    if (badges.length) {
+    const reserved = badgesForUsername(profile.username) || [];
+    const chosen = Array.isArray(profile.profileBadges) ? profile.profileBadges
+      .map(id => badgeDefinitions.get(normalizeUsername(id))).filter(Boolean) : [];
+    const seen = new Set();
+    const combined = [];
+    reserved.concat(chosen).forEach(b => { if (!b || seen.has(b.id)) return; seen.add(b.id); combined.push(b); });
+    if (combined.length) {
       const badgesWrap = document.createElement('span');
       badgesWrap.className = 'users-list-badges';
-      badges.forEach((badge) => {
-        badgesWrap.appendChild(buildBadgeElement(badge, 'users-list-badge'));
-      });
+      combined.forEach((badge) => badgesWrap.appendChild(buildBadgeElement(badge, 'users-list-badge')));
       row.appendChild(badgesWrap);
     }
 
@@ -1292,7 +1473,7 @@ function startSendCooldown() {
   input.disabled = true;
   btn.disabled = true;
 
-  let remaining = 5;
+  let remaining = 3;
   input.placeholder = `wait ${remaining}s before sending...`;
 
   const interval = setInterval(() => {
@@ -1307,6 +1488,26 @@ function startSendCooldown() {
   }, 1000);
 }
 
+
+// List of extra hardened regex patterns for chat moderation
+const hardenedChatRegexes = [
+  // Block repeated characters (e.g. ffffuuuu)
+  /([a-zA-Z])\1{4,}/gi,
+  // Block Zalgo text (excessive diacritics)
+  /[\u0300-\u036f]{3,}/g,
+  // Block URLs, but allow pages.dev subdomains
+  /https?:\/\/(?![\w\-]+\.pages\.dev(\/|$))[\w\-._~:/?#[\]@!$&'()*+,;=%]+/gi,
+  // Block IP addresses
+  /\b\d{1,3}(?:\.\d{1,3}){3}\b/g,
+  // Block discord invites
+  /discord\.(gg|com|io|me)\/[a-z0-9]+/gi,
+  // Block obvious obfuscation (e.g. l33t, s p a c e d)
+  // (Removed: was too aggressive and censored normal messages)
+  // Block unicode block/box drawing spam
+  /[\u2500-\u25FF]{3,}/g,
+  // Block emoji spam (3+ emojis in a row)
+  /([\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]){3,}/gu
+];
 let badWordMatchers = [];
 
 function escapeRegex(text) {
@@ -1321,7 +1522,8 @@ function buildBadWordMatcher(entry) {
   if (!tokens.length) return null;
 
   const phrasePattern = tokens.map(escapeRegex).join('[\\s\\p{P}\\p{S}_]*');
-  return new RegExp(`(?<![\\p{L}\\p{N}])${phrasePattern}(?![\\p{L}\\p{N}])`, 'giu');
+  // Only match if the phrase is a whole word (surrounded by word boundaries or non-letter/number)
+  return new RegExp(`(?:^|[^\\p{L}\\p{N}])${phrasePattern}(?=[^\\p{L}\\p{N}]|$)`, 'giu');
 }
 
 fetch('./assets/badwords.txt')
@@ -1338,6 +1540,22 @@ fetch('./assets/badwords.txt')
 
 function filterText(text) {
   let filtered = text.normalize('NFKC');
+  // Apply hardened regexes, but skip *.pages.dev URLs for the URL regex
+  for (const regex of hardenedChatRegexes) {
+    if (regex === hardenedChatRegexes[2]) { // URL regex
+      filtered = filtered.replace(regex, m => {
+        // If it's a pages.dev subdomain, don't censor
+        try {
+          const url = new URL(m);
+          if (url.hostname.endsWith('.pages.dev')) return m;
+        } catch {}
+        return '*'.repeat(Array.from(m).length);
+      });
+    } else {
+      filtered = filtered.replace(regex, m => '*'.repeat(Array.from(m).length));
+    }
+  }
+  // Then apply bad word matchers
   for (const regex of badWordMatchers) {
     filtered = filtered.replace(regex, m => '*'.repeat(Array.from(m).length));
   }
@@ -1346,6 +1564,12 @@ function filterText(text) {
 
 function containsBlockedWord(text) {
   const candidate = String(text || '').normalize('NFKC');
+  // Check hardened regexes first
+  for (const regex of hardenedChatRegexes) {
+    regex.lastIndex = 0;
+    if (regex.test(candidate)) return true;
+  }
+  // Then check bad word matchers
   for (const regex of badWordMatchers) {
     regex.lastIndex = 0;
     if (regex.test(candidate)) return true;
@@ -1384,7 +1608,15 @@ function renderMessage(docSnap) {
   const isMine = data.uid === uid;
   const canDelete = isMine || currentUserCanModerateChat;
   const username = String(data.user || '').trim() || 'user';
-  const badges = badgesForUsername(username);
+  // Combine reserved badges (from global config) with user-selected badges
+  const reserved = badgesForUsername(username) || [];
+  const profile = usersByUsernameLower.get(normalizeUsername(username));
+  const chosen = profile && Array.isArray(profile.profileBadges)
+    ? profile.profileBadges.map(id => badgeDefinitions.get(normalizeUsername(id))).filter(Boolean)
+    : [];
+  const seen = new Set();
+  const badges = [];
+  reserved.concat(chosen).forEach(b => { if (!b || seen.has(b.id)) return; seen.add(b.id); badges.push(b); });
   const time = data.time?.toDate
     ? data.time.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     : '';
@@ -1415,7 +1647,35 @@ function renderMessage(docSnap) {
 
   const textEl = document.createElement('span');
   textEl.className = 'msg-text';
-  textEl.textContent = String(data.text || '');
+  // Mention parsing: replace @username with a span
+  let msg = String(data.text || '');
+  // Build a regex of all known usernames (case-insensitive)
+  const usernames = Array.from(usersByUsernameLower.values()).map(u => u.username).sort((a,b)=>b.length-a.length);
+  if (usernames.length) {
+    // Escape regex special chars in usernames
+    const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const mentionRegex = new RegExp(`@(${usernames.map(esc).join('|')})\\b`, 'gi');
+    msg = msg.replace(mentionRegex, (m, uname) => {
+      // Link to profile tab with ?profile=username
+      return `<a href="?profile=${encodeURIComponent(uname)}" class=\"chat-mention\" data-username="${uname}">@${uname}</a>`;
+    });
+  }
+  textEl.innerHTML = msg;
+  // Add click handler to open profile tab without page reload
+  textEl.querySelectorAll && textEl.querySelectorAll('.chat-mention').forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      const uname = link.getAttribute('data-username');
+      if (uname && typeof window.switchTab === 'function') {
+        window.switchTab('profile');
+        if (typeof window.loadProfileByUsername === 'function') {
+          window.loadProfileByUsername(uname);
+        }
+      } else {
+        window.location.href = link.href;
+      }
+    });
+  });
 
   el.appendChild(userMeta);
   el.appendChild(timeEl);
@@ -1708,7 +1968,7 @@ window.openProfileSettings = async function () {
   try {
     const snap = await getDoc(doc(db, 'accounts', currentAccount.uid));
     const profile = profileFromAccountData(snap.exists() ? snap.data() : {});
-    fillProfileSettings(profile);
+    await fillProfileSettings(profile);
     const settings = document.getElementById('users-settings');
     if (settings) settings.style.display = 'block';
     setUsersMessage('');
@@ -1835,7 +2095,7 @@ window.saveProfileSettings = async function () {
       profileImageStatus,
       profileThemePreset,
       profileThemeColors,
-      profileButtons
+      profileButtons,
     });
     usersByUsernameLower.set(profile.usernameLower, profile);
 

@@ -2,7 +2,7 @@
  * games-loader.js
  * Universal Fetch-and-Inject Game Loader for Wavelength UI.
  *
- * CDN switching: Statically (default) | jsDelivr | GitHack | StaticDelivr
+ * CDN switching: jsDelivr (default) | Statically | GitHack | StaticDelivr
  * Each CDN has its own base URL set injected via window.__*_URLS__ globals.
  */
 
@@ -18,13 +18,13 @@
 
   // CDN definitions — labels and which global holds their base URLs
   const CDNS = [
-    { key: "statically", label: "Statically", urlsGlobal: "__BASE_URLS__"     },
     { key: "jsdelivr",   label: "jsDelivr",   urlsGlobal: "__JSDELIVR_URLS__"  },
+    { key: "statically", label: "Statically", urlsGlobal: "__BASE_URLS__"     },
     { key: "githack",    label: "GitHack",     urlsGlobal: "__GITHACK_URLS__"   },
     { key: "staticdelivr", label: "StaticDelivr", urlsGlobal: "__STATICDELIVR_URLS__" },
   ];
 
-  let currentCdn = "statically";
+  let currentCdn = "jsdelivr";
 
   let allGames = [];
   let filteredGames = [];
@@ -323,6 +323,18 @@
     const game = allGames.find(g => g.slug === slug && g.type === type);
     if (!game) return;
 
+    // Block "My Femboy Roommate" (slug: "mfr"). Show popup, open potato site, and do not start the game.
+    if (game.slug === "mfr" || (game.name && game.name.toLowerCase().includes("my femboy roommate"))) {
+      try {
+        alert("this game has moved to potato! please use that site for any other game requests, thanks!");
+        // Open the potato site in a new tab (user gesture from click should allow this)
+        try { window.open("https://potatos.pages.dev", "_blank"); } catch (e) { /* ignore */ }
+      } catch (e) {
+        // fallback: do nothing else
+      }
+      return;
+    }
+
     const gameUrl = buildGameUrl(game);
 
     console.log(`[games-loader] cdn=${currentCdn} type=${type} cdnKey=${game.cdn || game.type}`);
@@ -341,6 +353,12 @@
     const cdnIndicator = document.getElementById("cdn-indicator");
     if (cdnIndicator) {
       cdnIndicator.textContent = CDNS.find(c => c.key === currentCdn)?.label || currentCdn;
+    }
+
+    // Show/hide helpful note for web ports
+    const webportsNote = document.getElementById("webports-note");
+    if (webportsNote) {
+      webportsNote.style.display = (type === "webPorts") ? "block" : "none";
     }
 
     try {
@@ -389,6 +407,8 @@
 
     window.__CURRENT_GAME_URL__ = null;
     window.__CURRENT_GAME__     = null;
+    const webportsNote = document.getElementById("webports-note");
+    if (webportsNote) webportsNote.style.display = "none";
   };
 
   // ---------------------------------------------------------------------------

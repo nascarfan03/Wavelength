@@ -24,11 +24,23 @@
       "title": "gay",
       "image": "./assets/badges/users/gay.jpg"
     },
+    {
+      "id": "celebrity",
+      "label": "celebrity",
+      "title": "celebrity",
+      "image": "./assets/badges/users/star-nobg.png"
+    },
      {
       "id": "bug",
       "label": "bug",
       "title": "bug hunter",
       "image": "./assets/badges/users/bug.png"
+    },
+    {
+      "id": "decker",
+      "label": "decker",
+      "title": "decker dude",
+      "image": "./assets/badges/users/Nirvana_InUtero.jpg"
     }
   ],
   "users": {
@@ -37,11 +49,13 @@
     "Itz_kire": ["co-owner"],
     "minodab492": ["co-owner"],
     "December": ["moderator"],
-    "goon master": ["gay"],
-    "Decker_Dawg": ["well-known", "gay"],
+    "goon master": [""],
+    "Decker_Dawg": ["well-known", "gay", "decker"],
     "cl": ["well-known", "gay"],
     "lulu": ["gay"],
+    "Donald Trump":["celebrity"],
     "‎ ‎": ["bug"],
-    "‮soahc": ["bug"]
+    "‮soahc": ["bug"],
+    "Jeffery_Epstein": ["celebrity"]
   }
 }

@@ -60,6 +60,18 @@ permalink: /index.html
                       <div class="panel-body">
                           <div class="changelog">
                            <div class="log-entry">
+                            <div class="log-date">April 20th, 2026</div>
+                            <div class="log-title">chat is back!</div>
+                            <div class="log-desc"> <br> don't fuck it up this time otherwise it'll be gone forever. ~ aj</div>
+                            <span class="tag tag-new">back</span>
+                          </div>
+                            <div class="log-entry">
+                            <div class="log-date">April 16th, 2026</div>
+                            <div class="log-title">chat is down.</div>
+                            <div class="log-desc">due to recent events, the chat functionality has been removed until further notice. <br> the wavelength team is currently discussing and trying to implement a new way to chat where we all can have fun and be okay. <br> thank you for your understanding. ~ aj</div>
+                            <span class="tag tag-fix">important</span>
+                          </div>
+                           <div class="log-entry">
                             <div class="log-date">April 15th, 2026</div>
                             <div class="log-title">user comments</div>
                             <div class="log-desc">we have user comments now! sorry that we're becoming such of a social media almost, but it was requested. <br> i mean we got plants vs zombies (the real deal) now if y'all want to play it but idk have fun <3 ~ aj<br></div>
@@ -162,11 +174,14 @@ permalink: /index.html
               <div id="games-play-view" style="display:none;">
                 <button class="back-btn win-btn" onclick="closeGame()">back</button>
 
-                <div class="cdn-switcher-row">
-                  <span class="cdn-switcher-row-label">CDN:</span>
-                  <div id="cdn-switcher"></div>
-                  <span class="cdn-indicator-wrap">active: <span id="cdn-indicator">Statically</span></span>
-                </div>
+                  <div id="webports-note" class="webports-note" style="display:none;margin-bottom:8px;color:#333;font-size:13px;text-align:center;display:flex;justify-content:center;align-items:center;width:100%;">
+                    web ports work better if you play in fullscreen
+                  </div>
+                  <div class="cdn-switcher-row">
+                    <span class="cdn-switcher-row-label">CDN:</span>
+                    <div id="cdn-switcher"></div>
+                    <span class="cdn-indicator-wrap">active: <span id="cdn-indicator">jsDelivr</span></span>
+                  </div>
 
                 <div class="play-view-inner">
                   <div class="iframe-container">
@@ -301,6 +316,8 @@ permalink: /index.html
                         <div id="profile-button-picker" class="users-profile-button-picker"></div>
                         <div class="users-profile-hint">Choose up to 12 buttons from the assets/buttons folder.</div>
                       </div>
+
+
 
                       <div class="users-auth-group">
                         <label for="profile-theme-preset">Profile theme</label>

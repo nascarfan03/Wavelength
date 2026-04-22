@@ -8,7 +8,8 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy("credits");
   eleventyConfig.addPassthroughCopy("firebase-config.js");
   eleventyConfig.addPassthroughCopy("src/assets");
-    eleventyConfig.addPassthroughCopy("mirror.js");
+  eleventyConfig.addPassthroughCopy("mirror.js");
+  eleventyConfig.addPassthroughCopy("_data/profile-buttons-override.json");
   
   // Make data available globally
 
